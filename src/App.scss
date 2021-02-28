@@ -46,3 +46,73 @@
     margin-right: 0; 
   }
 }
+
+.Tile {
+  position: absolute;
+  z-index: 3;
+  width: 100px;
+  height: 100px;
+  line-height: 100px;
+  text-align: center;
+  border-radius: 3px;
+  font-size: 80px;
+  font-weight: bold;
+  // transition: transform 250ms ease-in-out;
+  // animation: splash 200ms ease;
+}
+
+
+.Value {
+  font-size: 55px;
+  &-2 { background: #eee4da; }
+  &-4 { background: #ede0c8; }
+}
+.Value {
+  font-size: 55px;
+  color: #f9f6f2;
+  &-8 { background: #f2b179; }
+  &-16 { background: #f59563; }
+  &-32 { background: #f67c5f; }
+  &-64 { background: #f65e3b; }
+}
+.Value {
+  font-size: 45px;
+  color: #f9f6f2;
+  &-128 { background: #edcf72; }
+  &-256 { background: #edcc61; }
+  &-512 { background: #edc850; }
+}
+.Value {
+  font-size: 35px;
+  color: #f9f6f2;
+  &-1024 { background: #edc53f; }
+  &-2048 { background: #edc22e; }
+}
+
+.AppearAt {
+  &-1 {
+    &-1 { left: 10px; top: 10px; animation: appear 200ms ease;  }
+    &-2 { left: 120px; top: 10px; animation: appear 200ms ease; }
+    &-3 { left: 230px; top: 10px; animation: appear 200ms ease; }
+    &-4 { left: 340px; top: 10px; animation: appear 200ms ease; }
+  }
+  &-2 {
+    &-1 { left: 10px; top: 120px; animation: appear 200ms ease; }
+    &-2 { left: 120px; top: 120px; animation: appear 200ms ease; }
+    &-3 { left: 230px; top: 120px; animation: appear 200ms ease; }
+    &-4 { left: 340px; top: 120px; animation: appear 200ms ease; }
+  }
+  &-3 {
+    &-1 { left: 10px; top: 230px; animation: appear 200ms ease; }
+    &-2 { left: 120px; top: 230px; animation: appear 200ms ease; }
+    &-3 { left: 230px; top: 230px; animation: appear 200ms ease; }
+    &-4 { left: 340px; top: 230px; animation: appear 200ms ease; }
+  }
+  &-4 {
+    &-1 { left: 10px; top: 340px; animation: appear 200ms ease; }
+    &-2 { left: 120px; top: 340px; animation: appear 200ms ease; }
+    &-3 { left: 230px; top: 340px; animation: appear 200ms ease; }
+    &-4 { left: 340px; top: 340px; animation: appear 200ms ease; }
+  }
+}
+
