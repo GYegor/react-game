@@ -1,21 +1,23 @@
+export type GameSize = 2 | 4 | 5 | 6 | 10;
+
 export interface GameProps {
   size: GameSize
 }
 
-export type GameSize = 4 | 5 | 6;
-
 export interface TileProps {
-    tileConfig: TileConfig;
+    tile: TileConfig;
+    enterLeaveStyles: any;
 }
 
 export interface TileConfig {
     key: string;
-    row:  PositionValue;
-    col:  PositionValue;
-    value?:  TileValue
+    row:  number;
+    col:  number;
+    value?:  TileValue;
+    appeared?: boolean;
+    merged?: boolean;
+    shouldDelete?: boolean;
 }
-
-export type PositionValue = 1 | 2 | 3 | 4;
 
 export type TileValue = 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 512 | 1024 | 2048;
 
@@ -23,4 +25,25 @@ export interface TileListProps {
     tileList: TileConfig[];
 }
 
+export type CollapseDirection = 'right' | 'left' | 'up' | 'down';
 
+export enum Keys {
+    ArrowUp = 'ArrowUp',
+    ArrowDown = 'ArrowDown',
+    ArrowLeft = 'ArrowLeft',
+    ArrowRight = 'ArrowRight',
+    KeyUp = 'KeyW',
+    KeyDown = 'KeyS',
+    KeyLeft = 'KeyA',
+    KeyRight = 'KeyD',
+}
+
+export const defaultSize: GameSize = 4;
+
+export const defaultTilesToAddQuantity = 2;
+
+export const boardWidth = 450
+
+export const tileWidth = 10*boardWidth/(11*defaultSize + 1) ;
+
+export const tileGap = tileWidth/10;

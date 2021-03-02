@@ -1,10 +1,33 @@
 import React from "react";
+import { useSpring, animated } from 'react-spring';
 import "../App.scss";
-import { TileProps } from "../App.model";
 
-const Tile: React.FC<TileProps> = ({ tileConfig: { row, col, value } }) => {
-  return (
-    <div className={`Tile AppearAt-${row}-${col} Value-${value}`}>{value}</div>
+import { tileGap, TileProps, tileWidth } from "../App.model";
+import { calculateFontSize } from "../App.service";
+
+const Tile: React.FC<TileProps> = ({ tile, enterLeaveStyles }) => {
+ 
+  const fontSize = calculateFontSize(tile, tileWidth);
+
+  const styles = useSpring({
+      top: (tile.row - 1) * (tileWidth + tileGap) + tileGap,
+      left: (tile.col - 1) * (tileWidth + tileGap) + tileGap,
+      config: { duration: 200 },
+      height: tileWidth,
+      width: tileWidth,
+      fontSize,
+  });
+
+    return (
+    <animated.div
+      className={`Tile Value-${tile.value} ${tile.merged ? 'Merged' : ''}`}
+      style={{ 
+        ...styles, 
+        ...enterLeaveStyles, 
+      }}
+    >
+      {tile.value}
+    </animated.div>
   );
 };
 
