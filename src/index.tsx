@@ -1,14 +1,27 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.scss';
+import { BrowserRouter as Router } from 'react-router-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import './fontawesome'
+import Header from './Header';
+import Footer from './Footer';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+
+const routing = (
+  <Router>
+    <div className="Main">
+      <Header />
+      <App />
+      <div className="Spacer"></div>
+      <Footer />
+    </div>
+  </Router>
+);
+
+
+ReactDOM.render(routing,
   document.getElementById('root')
 );
 

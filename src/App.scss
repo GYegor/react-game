@@ -1,6 +1,6 @@
 .App {
   text-align: center;
-  min-height: 100vh;
+  // min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -9,9 +9,13 @@
 }
 
 .GameWrapper {
+  width: 100%;
+}
+
+.BoardWrapper {
+  margin: 0 auto;
   box-sizing: border-box;
   position: relative;
-  margin-top: 40px;
   border-radius: 6px;
   // cursor: default;
   background: rgb(187, 173, 160);
@@ -97,4 +101,35 @@
     transform: scale(1.1); }
 
   100% {
-    transform: scale(1); } }
+    transform: scale(1); } 
+}
+
+.Controls {
+  height: 70px;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+}
+
+.ButtonWrapper {
+  flex: 1;
+}
+
+.Button {
+  background-color: rgb(250, 248, 240);
+  color:none;
+  border: none;
+  outline:none;
+}
+
+.IconWrapper {
+  margin: 0.5rem;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #776e65;
+  &:active {
+    transition: 50ms;
+    transform: scale(0.9);
+  }
+}
+

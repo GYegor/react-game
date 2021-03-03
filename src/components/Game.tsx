@@ -13,14 +13,31 @@ import {
   TileConfig,
   tileGap,
   tileWidth,
+  MusicConfig,
 } from '../App.model';
 import '../App.scss';
 import TileList from './TileList';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Controls from './Controls';
 
 
 const Game: React.FC<PropsWithChildren<GameProps>> = ({ size }) => {
+
+  const playMusicConfig: MusicConfig = {
+    musicOn: false,
+    icon: 'music',
+    title: 'Play music'
+  }
+
+  const stopMusicConfig: MusicConfig = {
+    musicOn: true,
+    icon: 'stop',
+    title: 'Play music'
+  }
+
   const [ tileList, setTileList ] = useState([] as TileConfig[]);   // set tileList !!!
+  const [ play, { stop, sound, pause } ] = useSound(backgroundMusic);
+  const [ musicConfig, setMusicConfig ] = useState(playMusicConfig)
 
   const cellMatrix = getCellMatrix(size)
 
@@ -81,43 +98,40 @@ const Game: React.FC<PropsWithChildren<GameProps>> = ({ size }) => {
     padding: tileGap
   }
 
-  const [ play, { stop, sound, pause } ] = useSound(backgroundMusic);
-  let bmId: string;
-  let notMuted = true;
 
 
   const startNewGame = () => {
-    sound.fade(0.3,0,1500)
-    stop()
-
+    stop();
+    setMusicConfig(stopMusicConfig)
     setTileList(addRandomTiles(cellMatrix, [], quantity))
-
-    bmId = sound.play()
-    sound.fade(0,0.3,3000, bmId)
+    play()
+    sound.fade(0,0.3,3000)
   }
 
-  const toggleMuteMusic = () => {
-    sound.mute(notMuted, bmId);
-    sound.volume(0.3, bmId);
+  const toggleMusic = (config: MusicConfig) => {
+    // setMusicConfig(true)
+    if (config.musicOn) {
+      stop();
+      sound.fade(0.3,0,3000)
+      setMusicConfig(playMusicConfig)
+    } else {
+      play()
+      sound.fade(0,0.3,3000)
+      setMusicConfig(stopMusicConfig)
+    }
+
+    // sound.volume(0.3, bmId);
     //   sound.pause(bmId);
-    notMuted = !notMuted;
   }
 
   return (
-    <>
-      <div className='GameWrapper' style={gameWrapperStyle}>
+    <div className='GameWrapper'>
+    	<Controls startNewGame={startNewGame} toggleMusic={() => toggleMusic(musicConfig)} musicConfig={musicConfig}/>
+      <div className='BoardWrapper' style={gameWrapperStyle}>
         <div className='GridWrapper'>{gamedGrid}</div>
         <TileList tileList={tileList} />
-      </div>
-      <button onClick={() => startNewGame()} title='Новая игра'>
-        <FontAwesomeIcon icon={['fas', 'gamepad']} size='lg' />
-      </button>
-      <button onClick={() => toggleMuteMusic()} title='Отключить музыку'>
-        <FontAwesomeIcon icon={['fas', 'volume-mute']} size='lg' />
-      </button>
-      
-
-    </>
+      </div>    
+    </div>
   );
 }
 
