@@ -3,6 +3,7 @@ import { getCellMatrix, addRandomTiles as addRandomTiles, getCollapsedTileList }
 import { defaultTilesToAddQuantity as quantity, boardWidth, CollapseDirection, GameProps, Keys, TileConfig, tileGap, TileProps, tileWidth } from '../App.model';
 import '../App.scss';
 import TileList from './TileList';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 const Game: React.FC<PropsWithChildren<GameProps>> = ({ size }) => {
@@ -48,7 +49,6 @@ const Game: React.FC<PropsWithChildren<GameProps>> = ({ size }) => {
     window.addEventListener('keydown', handleKeyPress)
     
     return () => {
-      console.log('remove listener');
       window.removeEventListener('keydown', handleKeyPress);
     }
   }, [tileList])
@@ -59,15 +59,26 @@ const Game: React.FC<PropsWithChildren<GameProps>> = ({ size }) => {
     padding: tileGap
   }
 
+  const startNewGame = () => {
+    setTileList(addRandomTiles(cellMatrix, [], quantity))
+
+  const toggleMuteMusic = () => {
+  }
+
   return (
     <>
       <div className='GameWrapper' style={gameWrapperStyle}>
-				<div className='GridWrapper'>{gamedGrid}</div>
+        <div className='GridWrapper'>{gamedGrid}</div>
         <TileList tileList={tileList} />
-	      </div>
-      <button
-        onClick={() => setTileList(addRandomTiles(cellMatrix, tileList, quantity))}
-      >Add two random tiles</button>
+      </div>
+      <button onClick={() => startNewGame()}>
+        <FontAwesomeIcon icon={['fas', 'gamepad']} size='lg' />
+      </button>
+      <button onClick={() => toggleMuteMusic()}>
+        <FontAwesomeIcon icon={['fas', 'volume-mute']} size='lg' />
+      </button>
+      
+
     </>
   );
 }
