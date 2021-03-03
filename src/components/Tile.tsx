@@ -12,7 +12,7 @@ const Tile: React.FC<TileProps> = ({ tile, enterLeaveStyles }) => {
   const styles = useSpring({
       top: (tile.row - 1) * (tileWidth + tileGap) + tileGap,
       left: (tile.col - 1) * (tileWidth + tileGap) + tileGap,
-      config: { duration: 200 },
+      config: { duration: 150 },
       height: tileWidth,
       width: tileWidth,
       fontSize,

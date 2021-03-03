@@ -55,7 +55,7 @@
   justify-content: center;
   border-radius: 3px;
   font-weight: bold;
-  transition: transform 250ms ease-in-out; // check
+  transition: transform 300ms ease-in-out; // check
 }
 
 .Value {
@@ -86,7 +86,7 @@
 
 .Merged {
   z-index: 10;
-  animation: merge 240ms ease;
+  animation: merge 220ms ease;
 }
 
 @keyframes merge {
@@ -94,7 +94,7 @@
     transform: scale(0.5); }
 
   50% {
-    transform: scale(1.2); }
+    transform: scale(1.1); }
 
   100% {
     transform: scale(1); } }
