@@ -7,8 +7,12 @@ export interface GameProps {
 }
 export interface ControlsProps {
 	startNewGame: () => void;
+	openSettings: () => void;
 	toggleMusic: () => void;
 	musicConfig: MusicConfig;
+}
+export interface SettingsProps {
+	openModal: boolean;
 }
 
 export interface MusicConfig {
@@ -49,9 +53,11 @@ export enum Keys {
 	KeyDown = 'KeyS',
 	KeyLeft = 'KeyA',
 	KeyRight = 'KeyD',
+	NewGame = 'KeyN',
+	EscapeSettings = 'Escape',
 }
 
-export const defaultSize: GameSize = 6;
+export const defaultSize: GameSize = 4;
 
 export const defaultTilesToAddQuantity = 2;
 

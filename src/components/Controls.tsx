@@ -5,7 +5,7 @@ import swishTiles from  '../assets/swish.mp3'
 
 import { ControlsProps } from '../App.model';
 
-const Controls: React.FC<ControlsProps> = ({ startNewGame, toggleMusic, musicConfig  }) => {
+const Controls: React.FC<ControlsProps> = ({ startNewGame, toggleMusic, musicConfig, openSettings  }) => {
 
   // const soundUrl = '/sounds/909-drums.mp3';
 
@@ -24,52 +24,13 @@ const Controls: React.FC<ControlsProps> = ({ startNewGame, toggleMusic, musicCon
         </button>
         </div>
       <div className="ButtonWrapper">
-        <button className="Button IconWrapper" onClick={() => toggleMusic()} title={musicConfig.title}>
+        <button className="Button IconWrapper" onClick={() => openSettings()} title='Game settings (S)'>
           <FontAwesomeIcon icon={['fas', 'cog']}/>
         </button>   
       </div>
     </div>
   );
 };
-
-interface AudioCintrols {
-  pause?: boolean,
-  mute?: boolean,
-  volume?: number,
-}
-
-
-const MusicButtons: React.FC = (props) => {
-
-
-
-  return (
-    <div className="Controls">
-
-      {/* <button onClick={swish}>Swish!</button> */}
-    </div>
-  );
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 export default Controls

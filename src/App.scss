@@ -109,6 +109,7 @@
   width: 100%;
   display: flex;
   justify-content: space-around;
+  align-items: center;
 }
 
 .ButtonWrapper {
@@ -133,3 +134,31 @@
   }
 }
 
+.Description {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  font-size: 1rem;
+  p {
+    margin: 6px 30px;
+    text-align: start;
+  }
+}
+
+.Settings {
+  position: fixed;
+  z-index: 50;
+  top: 25%;
+  left: calc(50% - 206px);
+  display: none;
+  height: 180px;
+  width: 400px;
+  border: 6px solid #776e65;
+  border-radius: 6px;
+  background-color: rgb(250, 248, 240);
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+.OpenModal {
+  display: flex;
+}

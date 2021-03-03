@@ -19,6 +19,7 @@ import '../App.scss';
 import TileList from './TileList';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Controls from './Controls';
+import Settings from './Settings';
 
 
 const Game: React.FC<PropsWithChildren<GameProps>> = ({ size }) => {
@@ -26,18 +27,19 @@ const Game: React.FC<PropsWithChildren<GameProps>> = ({ size }) => {
   const playMusicConfig: MusicConfig = {
     musicOn: false,
     icon: 'music',
-    title: 'Play music'
+    title: 'Play music (M)'
   }
 
   const stopMusicConfig: MusicConfig = {
     musicOn: true,
     icon: 'stop',
-    title: 'Play music'
+    title: 'Play music (M)'
   }
 
   const [ tileList, setTileList ] = useState([] as TileConfig[]);   // set tileList !!!
   const [ play, { stop, sound, pause } ] = useSound(backgroundMusic);
   const [ musicConfig, setMusicConfig ] = useState(playMusicConfig)
+  const [ openModal, setOpenModal ] = useState(false)
 
   const cellMatrix = getCellMatrix(size)
 
@@ -72,7 +74,10 @@ const Game: React.FC<PropsWithChildren<GameProps>> = ({ size }) => {
       } else if  (code === Keys.ArrowLeft || code === Keys.KeyLeft) {
         sound = swish;
         direction = 'left';
-      }
+      } else if  (code === Keys.EscapeSettings) {
+        setOpenModal(false)
+      } 
+
       if (direction) {
         sound()
         const collapsedList = getCollapsedTileList(tileList, direction, size);
@@ -99,24 +104,23 @@ const Game: React.FC<PropsWithChildren<GameProps>> = ({ size }) => {
   }
 
 
-
   const startNewGame = () => {
     stop();
     setMusicConfig(stopMusicConfig)
     setTileList(addRandomTiles(cellMatrix, [], quantity))
     play()
-    sound.fade(0,0.3,3000)
+    sound.fade(0,0.2,2000)
   }
 
   const toggleMusic = (config: MusicConfig) => {
     // setMusicConfig(true)
     if (config.musicOn) {
       stop();
-      sound.fade(0.3,0,3000)
+      sound.fade(0.2,0,2000)
       setMusicConfig(playMusicConfig)
     } else {
       play()
-      sound.fade(0,0.3,3000)
+      sound.fade(0,0.2,2000)
       setMusicConfig(stopMusicConfig)
     }
 
@@ -124,13 +128,43 @@ const Game: React.FC<PropsWithChildren<GameProps>> = ({ size }) => {
     //   sound.pause(bmId);
   }
 
+  const openSettings = () => {
+    setOpenModal(true)
+  }
+
   return (
     <div className='GameWrapper'>
-    	<Controls startNewGame={startNewGame} toggleMusic={() => toggleMusic(musicConfig)} musicConfig={musicConfig}/>
       <div className='BoardWrapper' style={gameWrapperStyle}>
         <div className='GridWrapper'>{gamedGrid}</div>
         <TileList tileList={tileList} />
       </div>    
+      <Controls 
+        startNewGame={startNewGame} 
+        toggleMusic={() => toggleMusic(musicConfig)} 
+        musicConfig={musicConfig}
+        openSettings={openSettings}
+        />
+      <div className="Description">
+        <h3>
+          Controlls:
+        </h3>
+        <p>
+          <b>Gameplay</b>:  Arrows or W, S, A, D
+        </p>
+        <p>
+          <b>Start new game</b>:  N
+        </p>
+        <p>
+          <b>Start/stop music</b>:  M 
+        </p>
+        <p>
+          <b>Game settings</b>:  C 
+        </p>
+        <p>
+          <b>Escape game settings</b>:  Esc
+        </p>
+      </div>
+      <Settings openModal={openModal}/>
     </div>
   );
 }
