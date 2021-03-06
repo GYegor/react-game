@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
-import { TileConfig, GameSize, CollapseDirection } from './App.model';
+import { TileConfig, RowSize, CollapseDirection } from './App.model';
 
 
-export const getCellMatrix = (length: GameSize) => {
+export const getCellMatrix = (length: RowSize) => {
   return Array.from({ length }).reduce<TileConfig[]>((acc, _val, i) => {
   acc.push(...Array.from({ length }, (_el, j) => ({
     row: i + 1,
@@ -47,7 +47,7 @@ const reduceTileLine = (line: TileConfig[]) => (
   }, [] as TileConfig[])
 );
 
-const getCollapsedTileLine = (line: TileConfig[], collapseDirection: CollapseDirection, size: GameSize) => {
+const getCollapsedTileLine = (line: TileConfig[], collapseDirection: CollapseDirection, size: RowSize) => {
   switch (collapseDirection) {
     case 'right': {
       line.sort((a, b) => b.col - a.col) // sort from more to less
@@ -96,11 +96,11 @@ const getCollapsedTileLine = (line: TileConfig[], collapseDirection: CollapseDir
   }
 };
 
-const getTileRowsToCollapse = (tileList: TileConfig[], length: GameSize): TileConfig[][] =>  (
+const getTileRowsToCollapse = (tileList: TileConfig[], length: RowSize): TileConfig[][] =>  (
   Array.from( { length } ).map((_el, i) => tileList.filter(tile => tile.row === i + 1))
 );
 
-const getTileColsToCollapse = (tileList: TileConfig[], length: GameSize): TileConfig[][] => (
+const getTileColsToCollapse = (tileList: TileConfig[], length: RowSize): TileConfig[][] => (
   Array.from( { length } ).map((_el, i) => tileList.filter(tile => tile.col === i + 1))
 );
 
@@ -108,7 +108,7 @@ const getTileColsToCollapse = (tileList: TileConfig[], length: GameSize): TileCo
 export const getCollapsedTileList = (
   tileList: TileConfig[],
   direction: CollapseDirection,
-  size: GameSize,
+  size: RowSize,
 ) => {
   const clearedTileList = tileList.filter(tile => !tile.shouldDelete )
   clearedTileList.forEach(tile => { delete tile.appeared; delete tile.merged; });

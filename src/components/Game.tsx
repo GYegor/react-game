@@ -5,15 +5,15 @@ import backgroundMusic from '../assets/bensound-dreams.mp3'
 import swishSound from  '../assets/throw.mp3'
 import { getCellMatrix, addRandomTiles as addRandomTiles, getCollapsedTileList } from '../App.service';
 import {
-  defaultTilesToAddQuantity as quantity,
-  boardWidth,
   CollapseDirection,
   GameProps,
   Keys,
   TileConfig,
-  tileGap,
-  tileWidth,
   MusicConfig,
+  RowSize,
+  GameConfig,
+  quantity,
+  boardWidth,
 } from '../App.model';
 import '../App.scss';
 import TileList from './TileList';
@@ -22,7 +22,7 @@ import Controls from './Controls';
 import Settings from './Settings';
 
 
-const Game: React.FC<PropsWithChildren<GameProps>> = ({ size }) => {
+const Game: React.FC = () => {
 
   const playMusicConfig: MusicConfig = {
     musicOn: false,
@@ -36,25 +36,35 @@ const Game: React.FC<PropsWithChildren<GameProps>> = ({ size }) => {
     title: 'Play music (M)'
   }
 
+  const defaultGameConfig: GameConfig = {
+    size: 4,
+    tileWidth: 100,
+    tileGap: 10,
+    newTilesQuantity: 2,
+  }
+
   const [ tileList, setTileList ] = useState([] as TileConfig[]);   // set tileList !!!
-  const [ play, { stop, sound, pause } ] = useSound(backgroundMusic);
   const [ musicConfig, setMusicConfig ] = useState(playMusicConfig)
-  const [ openModal, setOpenModal ] = useState(false)
-
-  const cellMatrix = getCellMatrix(size)
-
-  const gamedGrid = Array.from({length: size}, ((_el, i)=> {
-    return (
-      <div key={`cell-row-${i+1}`} className='Row' style={{ height: tileWidth, marginBottom: tileGap }}>
-        {Array.from({ length: size }, ((_el, j) => (
-          <div key={`cell-col-${j+1}`} className='Cell' style={{ height: tileWidth, width: tileWidth, marginRight: tileGap }}></div>
-        )))}
-      </div>
-    );
-  }))
-
+  const [ modalOpened, setModalOpened ] = useState(false)
+  const [ play, { stop, sound } ] = useSound(backgroundMusic);
   const [ swish ] = useSound(swishSound);
+  const [ gameConfig, setGameConfig ] = useState(defaultGameConfig);
 
+
+  const cellMatrix = getCellMatrix(gameConfig.size)
+
+
+  const setGameGrid = (gridConfig: GameConfig) => (
+    Array.from({length: gridConfig.size}, ((_el, i)=> {
+      return (
+        <div key={`cell-row-${i+1}`} className='Row' style={{ height: gridConfig.tileWidth, marginBottom: gridConfig.tileGap }}>
+          {Array.from({ length: gridConfig.size }, ((_el, j) => (
+            <div key={`cell-col-${j+1}`} className='Cell' style={{ height: gridConfig.tileWidth, width: gridConfig.tileWidth, marginRight: gridConfig.tileGap }}></div>
+          )))}
+        </div>
+      );
+    }))
+  )
 
   // срабатывает полсе каждого рендера, при условии что изменились зависимости ( ..., [ ...] )
   useEffect(() => {
@@ -75,13 +85,17 @@ const Game: React.FC<PropsWithChildren<GameProps>> = ({ size }) => {
         sound = swish;
         direction = 'left';
       } else if  (code === Keys.EscapeSettings) {
-        setOpenModal(false)
+        setModalOpened(false)
+      } if  (code === Keys.NewGame) {
+        startNewGame()
+      } if  (code === Keys.Settings) {
+        toggleModal(true)
       } 
 
       if (direction) {
         sound()
-        const collapsedList = getCollapsedTileList(tileList, direction, size);
-        // setTileList(collapsedList)
+          const collapsedList = getCollapsedTileList(tileList, direction, gameConfig.size);
+          // setTileList(collapsedList)
           const expandedList = addRandomTiles(cellMatrix, collapsedList, quantity);
           setTileList(expandedList)
 
@@ -95,76 +109,95 @@ const Game: React.FC<PropsWithChildren<GameProps>> = ({ size }) => {
     return () => {
       window.removeEventListener('keydown', handleKeyPress);
     }
-  }, [tileList])
+  }, [tileList, play])
 
-  const gameWrapperStyle = {
+  const setGameWrapperStyle = () => ({
     height: boardWidth,
     width: boardWidth,
-    padding: tileGap
-  }
-
+    padding: gameConfig.tileGap
+  })
 
   const startNewGame = () => {
-    stop();
+    let id: any
+    stop(id);
     setMusicConfig(stopMusicConfig)
-    setTileList(addRandomTiles(cellMatrix, [], quantity))
-    play()
-    sound.fade(0,0.2,2000)
+
+    const collapsedList = getCollapsedTileList([], 'up', gameConfig.size);
+    // setTileList(collapsedList)
+    const expandedList = addRandomTiles(cellMatrix, collapsedList, quantity);
+    setTileList(expandedList)
+
+
+    id = play()
+    sound.loop(true);
+    sound.fade(0,0.2,2000, id)
   }
 
   const toggleMusic = (config: MusicConfig) => {
     // setMusicConfig(true)
     if (config.musicOn) {
+      sound.fade(0.2,0,2000);
       stop();
-      sound.fade(0.2,0,2000)
-      setMusicConfig(playMusicConfig)
+      setMusicConfig(playMusicConfig);
     } else {
-      play()
-      sound.fade(0,0.2,2000)
-      setMusicConfig(stopMusicConfig)
+      play();
+      sound.loop(true);
+      sound.fade(0,0.2,2000);
+      setMusicConfig(stopMusicConfig);
     }
 
     // sound.volume(0.3, bmId);
     //   sound.pause(bmId);
   }
 
-  const openSettings = () => {
-    setOpenModal(true)
+  const toggleModal = (isOpened: boolean) => {
+    setModalOpened(!isOpened)
   }
 
+  // const changeGridSize = (newSize) => {
+  //   const arr = [2,4,5,6,10]
+  //   const newIdx = arr.indexOf(size) + 1;
+  //   if (arr[newIdx]) {
+  //     setSize(arr[newIdx] as GameSize)
+  //   }
+  // }
+
   return (
-    <div className='GameWrapper'>
-      <div className='BoardWrapper' style={gameWrapperStyle}>
-        <div className='GridWrapper'>{gamedGrid}</div>
-        <TileList tileList={tileList} />
-      </div>    
-      <Controls 
-        startNewGame={startNewGame} 
-        toggleMusic={() => toggleMusic(musicConfig)} 
+    <div className="GameWrapper">
+      <div className="BoardWrapper" style={setGameWrapperStyle()}>
+        <div className="GridWrapper">{setGameGrid(gameConfig)}</div>
+        <TileList tileList={tileList} gridConfig={gameConfig} />
+      </div>
+      <Controls
+        startNewGame={startNewGame}
+        toggleMusic={() => toggleMusic(musicConfig)}
         musicConfig={musicConfig}
-        openSettings={openSettings}
-        />
+        openSettings={() => toggleModal(modalOpened)}
+      />
       <div className="Description">
-        <h3>
-          Controlls:
-        </h3>
+        <h3>Controlls:</h3>
         <p>
-          <b>Gameplay</b>:  Arrows or W, S, A, D
+          <b>Gameplay</b>: Arrows or W, S, A, D
         </p>
         <p>
-          <b>Start new game</b>:  N
+          <b>Start new game</b>: N
         </p>
         <p>
-          <b>Start/stop music</b>:  M 
+          <b>Start/stop music</b>: M
         </p>
         <p>
-          <b>Game settings</b>:  C 
+          <b>Game settings</b>: C
         </p>
         <p>
-          <b>Escape game settings</b>:  Esc
+          <b>Escape game settings</b>: Esc / C
         </p>
       </div>
-      <Settings openModal={openModal}/>
+      <Settings
+        openModal={modalOpened}
+        passToParentGameConfig={(newConfig: GameConfig) => { setGameConfig(newConfig); }}
+        closeSettings={() => toggleModal(true)}
+        gameConfig={gameConfig}
+      />
     </div>
   );
 }

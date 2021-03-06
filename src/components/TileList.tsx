@@ -6,7 +6,7 @@ import { TileListProps } from "../App.model";
 import Tile from "./Tile";
 
 
-const TileList: React.FC<TileListProps> = ({ tileList: items }) => (
+const TileList: React.FC<TileListProps> = ({ tileList: items, gridConfig }) => (
   <div>
     <Transition
       items={items}
@@ -17,7 +17,7 @@ const TileList: React.FC<TileListProps> = ({ tileList: items }) => (
       config={{duration: 0}}
     >
       {tile => styles => (
-        <Tile key={tile.key} tile={tile} enterLeaveStyles={styles} />
+        <Tile key={tile.key} tile={tile} enterLeaveStyles={styles} gridConfig={gridConfig}/>
       )}
     </Transition>
   </div>

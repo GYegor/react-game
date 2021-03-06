@@ -8,6 +8,9 @@ import {
   faMusic,
   faStop,
   faCog,
+  faCaretRight,
+  faCaretLeft,
+  faTimes
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
@@ -18,5 +21,8 @@ library.add(
   faGithub,
   faMusic,
   faStop,
-  faCog
+  faCog,
+  faCaretRight,
+  faCaretLeft,
+  faTimes
 );

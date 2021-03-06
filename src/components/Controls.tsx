@@ -8,9 +8,6 @@ import { ControlsProps } from '../App.model';
 const Controls: React.FC<ControlsProps> = ({ startNewGame, toggleMusic, musicConfig, openSettings  }) => {
 
   // const soundUrl = '/sounds/909-drums.mp3';
-
-  
-
   return (
     <div className="Controls">
       <div className="ButtonWrapper">

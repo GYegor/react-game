@@ -2,19 +2,19 @@ import React from "react";
 import { useSpring, animated } from 'react-spring';
 import "../App.scss";
 
-import { tileGap, TileProps, tileWidth } from "../App.model";
+import { TileProps } from "../App.model";
 import { calculateFontSize } from "../App.service";
 
-const Tile: React.FC<TileProps> = ({ tile, enterLeaveStyles }) => {
+const Tile: React.FC<TileProps> = ({ tile, enterLeaveStyles, gridConfig }) => {
  
-  const fontSize = calculateFontSize(tile, tileWidth);
+  const fontSize = calculateFontSize(tile, gridConfig.tileWidth);
 
   const styles = useSpring({
-      top: (tile.row - 1) * (tileWidth + tileGap) + tileGap,
-      left: (tile.col - 1) * (tileWidth + tileGap) + tileGap,
+      top: (tile.row - 1) * (gridConfig.tileWidth + gridConfig.tileGap) + gridConfig.tileGap,
+      left: (tile.col - 1) * (gridConfig.tileWidth + gridConfig.tileGap) + gridConfig.tileGap,
       config: { duration: 150 },
-      height: tileWidth,
-      width: tileWidth,
+      height: gridConfig.tileWidth,
+      width: gridConfig.tileWidth,
       fontSize,
   });
 
