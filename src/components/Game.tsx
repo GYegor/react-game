@@ -47,7 +47,14 @@ const Game: React.FC = () => {
     gameCount: 0,
   }
 
-  const [ tileList, setTileList ] = useState([] as TileConfig[]);   // set tileList !!!
+  const list = localStorage.getItem('tileList')
+  const [ tileList, setTileList ] = useState(list ?  JSON.parse(list) as TileConfig[] : [] as TileConfig[]);   // set tileList !!!
+
+  const config = localStorage.getItem('gameConfig')
+  const [ gameConfig, setGameConfig ] = useState(config ?  JSON.parse(config) as GameConfig : defaultGameConfig);  
+  console.log(list && list.length); // set tileList !!!
+  const [ startBtnIcon, setStartbtnico ] = useState((list && JSON.parse(list).length) ? 'sync-alt' : 'gamepad' as IconName);
+  const [ gameOn, setGameOn ] = useState(false);
 
   const [ musicConfig, setMusicConfig ] = useState(playMusicConfig)
   const [ modalOpened, setModalOpened ] = useState(false)
@@ -56,7 +63,9 @@ const Game: React.FC = () => {
   const [ play, { stop, sound } ] = useSound(backgroundMusic);
   const [ swish ] = useSound(swishSound);
   const [ clickSound ] = useSound(click, { volume: 0.5 });
-  const [ gameConfig, setGameConfig ] = useState(defaultGameConfig);
+
+
+  // const [ gameConfig, setGameConfig ] = useState(defaultGameConfig);
 
   const cellMatrix = getCellMatrix(gameConfig.size)
 
@@ -75,24 +84,32 @@ const Game: React.FC = () => {
 
   // срабатывает полсе каждого рендера, при условии что изменились зависимости ( ..., [ ...] )
   useEffect(() => {
+    localStorage.setItem('gameConfig', JSON.stringify(gameConfig));
+    localStorage.setItem('tileList', JSON.stringify(tileList));
+
     // if (gameOn) {
     const handleKeyPress = (event: KeyboardEvent) => {
         const { code } = event
         let sound = swish;
         let direction: CollapseDirection = '' as CollapseDirection;
-        if (code === Keys.ArrowUp || code === Keys.KeyUp) {
-          direction = 'up';
-          sound = swish;
-        } else if  (code === Keys.ArrowDown || code === Keys.KeyDown) {
-          sound = swish;
-          direction = 'down';
-        }  else if  (code === Keys.ArrowRight || code === Keys.KeyRight) {
-          sound = swish;
-          direction = 'right';
-        } else if  (code === Keys.ArrowLeft || code === Keys.KeyLeft) {
-          sound = swish;
-          direction = 'left';
-        } else if  (code === Keys.EscapeSettings) {
+        if (startBtnIcon === 'sync-alt') {
+
+          if (code === Keys.ArrowUp || code === Keys.KeyUp) {
+            direction = 'up';
+            sound = swish;
+          } else if  (code === Keys.ArrowDown || code === Keys.KeyDown) {
+            sound = swish;
+            direction = 'down';
+          }  else if  (code === Keys.ArrowRight || code === Keys.KeyRight) {
+            sound = swish;
+            direction = 'right';
+          } else if  (code === Keys.ArrowLeft || code === Keys.KeyLeft) {
+            sound = swish;
+            direction = 'left';
+          } 
+        }
+        
+        if  (code === Keys.EscapeSettings) {
           setModalOpened(false);
           setFsbtnico('expand-alt');
         } if  (code === Keys.Settings) {
@@ -100,15 +117,21 @@ const Game: React.FC = () => {
         } if  (code === Keys.NewGame) {
           startNewGame();
         } 
-        
-
         if (direction) {
           sound()
-            const collapsedList = getCollapsedTileList(tileList, direction, gameConfig.size);
-            // setTileList(collapsedList)
-            const expandedList = addRandomTiles(cellMatrix, collapsedList, gameConfig.newTilesQuantity);
-            setTileList(expandedList)
+          const collapsedList = getCollapsedTileList(tileList, direction, gameConfig.size);
+          const addedCount = collapsedList.reduce((sum, tile) => {
+            if (tile.merged && tile.value) {
+              sum += tile.value
+            }
+            return sum;
+          }, 0)
 
+          const gameCount = gameConfig.gameCount ? gameConfig.gameCount + addedCount : addedCount;
+          setGameConfig({ ...gameConfig, gameCount })
+
+          const expandedList = addRandomTiles(cellMatrix, collapsedList, gameConfig.newTilesQuantity);
+          setTileList(expandedList)
 
           direction = '' as CollapseDirection;
         }
@@ -128,9 +151,7 @@ const Game: React.FC = () => {
     padding: gameConfig.tileGap
   })
 
-//#endregion STARTGAME
-const [ gameOn, setGameOn ] = useState(false);
-const [ startBtnIcon, setStartbtnico ] = useState('gamepad' as IconName);
+//#region STARTGAME
 const startNewGame = (shouldStopAutoplay: boolean = true) => {
   if (shouldStopAutoplay) {
     setAutoplay(false);
@@ -150,11 +171,14 @@ const startNewGame = (shouldStopAutoplay: boolean = true) => {
       sound.loop(true);
       sound.fade(0,0.2,2000, id)
     } else {
-      console.log('sdvsdvsvsv');
       setStartbtnico('gamepad')
       stop();
       setMusicConfig(stopMusicConfig);
       setTileList([]);
+      setGameConfig({
+        ...gameConfig,
+        gameCount: 0
+      })
     }
   } else {
     setResult('');
@@ -170,7 +194,8 @@ const startNewGame = (shouldStopAutoplay: boolean = true) => {
   }
 
 }
-//#region STARTGAME
+//#endregion STARTGAME
+
 const toggleMusic = (config: MusicConfig) => {
   // setMusicConfig(true)
   if (config.musicOn) {

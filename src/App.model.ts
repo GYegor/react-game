@@ -15,7 +15,7 @@ export interface GameConfig {
   isDarkTheme?: boolean;
   soundVolume?: number;
   soundOn?: number;
-  gameCount?: number | string;
+  gameCount?: number;
  }
 
 export interface ControlsProps {
