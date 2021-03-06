@@ -10,6 +10,7 @@
 
 .GameWrapper {
   width: 100%;
+  position: relative;
 }
 
 .BoardWrapper {
@@ -23,7 +24,7 @@
 
 .GridWrapper {
   position: absolute;
-  z-index: 1; 
+  z-index: 1;
   display:flex;
   flex-direction: column;
 }
@@ -32,23 +33,23 @@
   display:flex;
   margin-bottom: 10px;
   &.Row:last-child {
-    margin-bottom: 0; 
+    margin-bottom: 0;
   }
 }
-  
+
 .Cell {
   width: 100px;
   height: 100px;
   border-radius: 3px;
   background: rgba(238, 228, 218, 0.35);
   .Cell:last-child {
-    margin-right: 0; 
+    margin-right: 0;
   }
 }
 
 .TileListWrapper {
   position: absolute;
-  z-index: 1; 
+  z-index: 1;
 }
 
 .Tile {
@@ -102,7 +103,7 @@
     transform: scale(1.1); }
 
   100% {
-    transform: scale(1); } 
+    transform: scale(1); }
 }
 
 .Controls {
@@ -134,7 +135,7 @@
   }
   &__settingRecord {
     margin: 6px;
-    // font-size: 1rem;
+    font-size: 1.5rem;
   }
   &__closeBtn {
     position: absolute;
@@ -206,19 +207,19 @@
     transform: scale(1.05); }
 
   100% {
-    transform: scale(1); } 
+    transform: scale(1); }
 }
 
 @keyframes backdrop-appear {
   0% {
     opacity: 0; }
   100% {
-    opacity: 1; } 
+    opacity: 1; }
 }
 // #endregion MODAL DIALOG
 
 .SettingRecordWrapper {
   display: flex;
   align-items: center;
-  
+
 }

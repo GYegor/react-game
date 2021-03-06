@@ -1,9 +1,9 @@
-import React, { PropsWithChildren, useEffect, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useState } from 'react';
 import useSound from 'use-sound';
 
 import backgroundMusic from '../assets/bensound-dreams.mp3'
 import swishSound from  '../assets/throw.mp3'
-import { getCellMatrix, addRandomTiles as addRandomTiles, getCollapsedTileList } from '../App.service';
+import { getCellMatrix, addRandomTiles as addRandomTiles, getCollapsedTileList, calculateFontSize } from '../App.service';
 import {
   CollapseDirection,
   GameProps,
@@ -20,7 +20,7 @@ import TileList from './TileList';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Controls from './Controls';
 import Settings from './Settings';
-
+import { IconName } from '@fortawesome/fontawesome-svg-core';
 
 const Game: React.FC = () => {
 
@@ -46,6 +46,8 @@ const Game: React.FC = () => {
   const [ tileList, setTileList ] = useState([] as TileConfig[]);   // set tileList !!!
   const [ musicConfig, setMusicConfig ] = useState(playMusicConfig)
   const [ modalOpened, setModalOpened ] = useState(false)
+  const [ fsbtnico, setFsbtnico ] = useState('expand-alt' as IconName)
+
   const [ play, { stop, sound } ] = useSound(backgroundMusic);
   const [ swish ] = useSound(swishSound);
   const [ gameConfig, setGameConfig ] = useState(defaultGameConfig);
@@ -69,45 +71,47 @@ const Game: React.FC = () => {
   // срабатывает полсе каждого рендера, при условии что изменились зависимости ( ..., [ ...] )
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
-      const { code } = event
-      let sound = swish;
-      let direction: CollapseDirection = '' as CollapseDirection;
-      if (code === Keys.ArrowUp || code === Keys.KeyUp) {
-        direction = 'up';
-        sound = swish;
-      } else if  (code === Keys.ArrowDown || code === Keys.KeyDown) {
-        sound = swish;
-        direction = 'down';
-      }  else if  (code === Keys.ArrowRight || code === Keys.KeyRight) {
-        sound = swish;
-        direction = 'right';
-      } else if  (code === Keys.ArrowLeft || code === Keys.KeyLeft) {
-        sound = swish;
-        direction = 'left';
-      } else if  (code === Keys.EscapeSettings) {
-        setModalOpened(false)
-      } if  (code === Keys.NewGame) {
-        startNewGame()
-      } if  (code === Keys.Settings) {
-        toggleModal(true)
-      } 
+        const { code } = event
+        let sound = swish;
+        let direction: CollapseDirection = '' as CollapseDirection;
+        if (code === Keys.ArrowUp || code === Keys.KeyUp) {
+          direction = 'up';
+          sound = swish;
+        } else if  (code === Keys.ArrowDown || code === Keys.KeyDown) {
+          sound = swish;
+          direction = 'down';
+        }  else if  (code === Keys.ArrowRight || code === Keys.KeyRight) {
+          sound = swish;
+          direction = 'right';
+        } else if  (code === Keys.ArrowLeft || code === Keys.KeyLeft) {
+          sound = swish;
+          direction = 'left';
+        } else if  (code === Keys.EscapeSettings) {
+          setModalOpened(false);
+          setFsbtnico('expand-alt');
 
-      if (direction) {
-        sound()
-          const collapsedList = getCollapsedTileList(tileList, direction, gameConfig.size);
-          // setTileList(collapsedList)
-          const expandedList = addRandomTiles(cellMatrix, collapsedList, quantity);
-          setTileList(expandedList)
+        } if  (code === Keys.NewGame) {
+          startNewGame()
+        } if  (code === Keys.Settings) {
+          toggleModal(true)
+        }
+
+        if (direction) {
+          sound()
+            const collapsedList = getCollapsedTileList(tileList, direction, gameConfig.size);
+            // setTileList(collapsedList)
+            const expandedList = addRandomTiles(cellMatrix, collapsedList, quantity);
+            setTileList(expandedList)
 
 
-        direction = '' as CollapseDirection;
-      }
+          direction = '' as CollapseDirection;
+        }
     }
+    window.addEventListener('keyup', handleKeyPress);
 
-    window.addEventListener('keydown', handleKeyPress)
-    
+
     return () => {
-      window.removeEventListener('keydown', handleKeyPress);
+      window.removeEventListener('keyup', handleKeyPress);
     }
   }, [tileList, play])
 
@@ -122,12 +126,8 @@ const Game: React.FC = () => {
     stop(id);
     setMusicConfig(stopMusicConfig)
 
-    const collapsedList = getCollapsedTileList([], 'up', gameConfig.size);
-    // setTileList(collapsedList)
-    const expandedList = addRandomTiles(cellMatrix, collapsedList, quantity);
+    const expandedList = addRandomTiles(cellMatrix, [], quantity);
     setTileList(expandedList)
-
-
     id = play()
     sound.loop(true);
     sound.fade(0,0.2,2000, id)
@@ -145,9 +145,6 @@ const Game: React.FC = () => {
       sound.fade(0,0.2,2000);
       setMusicConfig(stopMusicConfig);
     }
-
-    // sound.volume(0.3, bmId);
-    //   sound.pause(bmId);
   }
 
   const toggleModal = (isOpened: boolean) => {
@@ -162,8 +159,109 @@ const Game: React.FC = () => {
   //   }
   // }
 
+  // const toggleFullScreen = () => {
+  //   // toggleFs(!fs);
+  //   if (fsbtnico === 'expand-alt') {
+  //     (document.documentElement as HTMLElement & {
+  //       webkitRequestFullscreen(): Promise<void>;
+  //     }).webkitRequestFullscreen();
+  //   } else {
+  //     (document as Document & {
+  //       webkitExitFullscreen(): Promise<void>;
+  //     }).webkitExitFullscreen();
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   if (!isGameOn
+  //   ) {
+
+  //   }
+
+  // }, [tileList])
+
+
+
+  const toggleAutoplay = () => {
+    // toggleFs(!fs);
+    let a;
+    // if (fsbtnico === 'play') {
+      startNewGame();
+      setInterval(() => {
+        const idx = Math.floor(Math.random() * 4)
+        const direction = ['up', 'down', 'right', 'left'][Math.floor(Math.random() * 4)] as CollapseDirection;
+        const collapsedList = getCollapsedTileList(tileList, direction, gameConfig.size);
+        const expandedList = addRandomTiles(cellMatrix, collapsedList, quantity);
+        setTileList(expandedList)
+      }, 1000);
+
+
+    // } else {
+    //   (document as Document & {
+    //     webkitExitFullscreen(): Promise<void>;
+    //   }).webkitExitFullscreen();
+    // }
+  }
+
+  // const [fs, toggleFs] = useState(false)
+
+  const toggleFullScreen = () => {
+    // toggleFs(!fs);
+    if (fsbtnico === 'expand-alt') {
+      (document.documentElement as HTMLElement & {
+        webkitRequestFullscreen(): Promise<void>;
+      }).webkitRequestFullscreen();
+      // setFsbtnico('compress-alt');
+
+
+    } else {
+      (document as Document & {
+        webkitExitFullscreen(): Promise<void>;
+      }).webkitExitFullscreen();
+      // setFsbtnico('expand-alt')
+
+    }
+  }
+
+  const [fs, toggleFs] = useState(false)
+
+  useEffect(() => {
+    const handleFullscreen = () => {
+      toggleFs(!fs);
+        if (fsbtnico !== 'expand-alt') {
+          setFsbtnico('expand-alt')
+        } else {
+          setFsbtnico('compress-alt');
+        }
+    }
+
+
+
+    document.addEventListener('webkitfullscreenchange', handleFullscreen)
+
+    return () => {
+      document.removeEventListener('webkitfullscreenchange', handleFullscreen);
+    }
+  }, [toggleFullScreen])
+
+
+
   return (
     <div className="GameWrapper">
+      <div style={{
+          position: 'fixed',
+          top: 0,
+          right: '50%',
+          transform: 'translate(250px)'}}>
+        <button className="Button IconWrapper IconWrapper__settingRecord"  onClick={() => toggleAutoplay()} title='Autoplay on/off'>
+          <FontAwesomeIcon icon={['fas', fsbtnico ]}/>
+        </button>
+
+        <button className="Button IconWrapper IconWrapper__settingRecord"  onClick={() => toggleFullScreen()} title='Full Screen on/off'>
+          <FontAwesomeIcon icon={['fas', fsbtnico ]}/>
+        </button>
+      </div>
+
       <div className="BoardWrapper" style={setGameWrapperStyle()}>
         <div className="GridWrapper">{setGameGrid(gameConfig)}</div>
         <TileList tileList={tileList} gridConfig={gameConfig} />
