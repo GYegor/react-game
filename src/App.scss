@@ -28,6 +28,35 @@
   }
 }
 
+.ResultOverLay {
+  z-index: 47;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 450px;
+  width: 450px;
+  background-color: red;
+  display: none;
+  visibility: hidden;
+  background-color: #faf8f085;
+  box-shadow: 13px 11px 92px 3px #5c4e45a6;
+  border-radius: 6px;
+  &.DarkTheme {
+    color: #88919a;
+    background-color: #2f354dcc;
+    box-shadow: 13px 11px 92px 3px #a3b1ba;
+  }
+  &.ShowResult {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 4rem;
+    font-weight: 700;
+    visibility: visible;
+    animation: appear 220ms ease;
+  }
+}
+
 .GridWrapper {
   position: absolute;
   z-index: 1;
@@ -254,15 +283,14 @@
   left: calc(50% - 200px);
   height: 260px;
   width: 400px;
-  // border: 5px solid #998e84;
   border-radius: 6px;
-  background-color: #faf8f0cc;
+  background-color: #e6e3d7;
   box-shadow: 13px 11px 92px 3px #5c4e45a6;
   visibility: hidden;
   &.OpenModal {
     display: flex;
     visibility: visible;
-    animation: modal-appear 220ms ease;
+    animation: appear 220ms ease;
   }
   .SettingsContentWrapper {
     height: 100%;
@@ -272,8 +300,7 @@
     flex-direction: column;
   }
   &.DarkTheme {
-    // border: 5px solid #66717b;
-    background-color: #05070fcc;
+    background-color: #202229;
     box-shadow: 13px 11px 92px 3px #a3b1ba;
   }
 }
@@ -293,7 +320,7 @@
   }
 }
 
-@keyframes modal-appear {
+@keyframes appear {
   0% {
     transform: scale(0.5);
   }

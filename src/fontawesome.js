@@ -14,7 +14,10 @@ import {
   faCompressAlt,
   faExpandAlt,
   faPlay,
-  faTimesCircle
+  faTimesCircle,
+  faSyncAlt,
+  faListOl,
+  faListAlt
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
@@ -32,5 +35,8 @@ library.add(
   faExpandAlt,
   faCompressAlt,
   faPlay,
-  faTimesCircle
+  faTimesCircle,
+  faSyncAlt,
+  faListOl,
+  faListAlt
 );

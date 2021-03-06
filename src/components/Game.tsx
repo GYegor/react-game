@@ -21,6 +21,7 @@ import Controls from './Controls';
 import Settings from './Settings';
 import { IconName } from '@fortawesome/fontawesome-svg-core';
 import click from  '../assets/click.wav'
+import ControlKeys from './ControlKeys';
 
 
 const Game: React.FC = () => {
@@ -46,8 +47,11 @@ const Game: React.FC = () => {
   }
 
   const [ tileList, setTileList ] = useState([] as TileConfig[]);   // set tileList !!!
+
   const [ musicConfig, setMusicConfig ] = useState(playMusicConfig)
   const [ modalOpened, setModalOpened ] = useState(false)
+  const [ controlKeysOpened, setControlKeysOpened ] = useState(false)
+
   const [ play, { stop, sound } ] = useSound(backgroundMusic);
   const [ swish ] = useSound(swishSound);
   const [ clickSound ] = useSound(click, { volume: 0.5 });
@@ -121,7 +125,12 @@ const Game: React.FC = () => {
     padding: gameConfig.tileGap
   })
 
-  const startNewGame = () => {
+  const startNewGame = (shouldStopAutoplay: boolean = true) => {
+    if (shouldStopAutoplay) {
+      setAutoplay(false);
+      setApbtnico('play')
+    }
+    setResult('');
     let id: any
     stop(id);
     setMusicConfig(stopMusicConfig)
@@ -151,16 +160,21 @@ const Game: React.FC = () => {
     setModalOpened(!isOpened)
   }
 
+  const toggleControlKeys = (isOpened: boolean) => {
+    setControlKeysOpened(!isOpened)
+  }
+
 
 //#region AUTOPLAY
-  const [ isAutoplay, setAutoplay ] = useState(false);
-  const [ apBtnIcon, setApbtnico ] = useState('play' as IconName);
-  const toggleAutoplay = () => {
+const [ isAutoplay, setAutoplay ] = useState(false);
+const [ apBtnIcon, setApbtnico ] = useState('play' as IconName);
+const toggleAutoplay = () => {
+    setResult('');
     clickSound();
     setAutoplay(!isAutoplay);
     if (!isAutoplay) {
       setApbtnico('times-circle')
-      startNewGame();
+      startNewGame(false);
     } else {
       setApbtnico('play')
       stop();
@@ -211,6 +225,15 @@ const Game: React.FC = () => {
   }, [toggleFullScreen])
 //#endregion FULLSCREEN 
 
+//#region RESULT HANDLING 
+const [ result, setResult ] = useState('You WIN!!!');
+
+
+
+
+//#endregion RESULT HANDLING 
+
+
   return (
     <div className={`GameWrapper ${gameConfig.isDarkTheme ? 'DarkTheme' : ''}`}>
 
@@ -219,11 +242,14 @@ const Game: React.FC = () => {
           top: 0,
           right: '50%',
           transform: 'translate(250px)'}}>
+        <button className="Button IconWrapper IconWrapper__settingRecord"  onClick={() => toggleControlKeys(controlKeysOpened)} title='Game controlls'>
+          <FontAwesomeIcon icon={['fas', 'list-alt' ]}/>
+        </button>
+        <button className="Button IconWrapper IconWrapper__settingRecord"  onClick={() => toggleControlKeys(controlKeysOpened)} title='Last 10 results'>
+          <FontAwesomeIcon icon={['fas', 'list-ol' ]}/>
+        </button>
         <button className="Button IconWrapper IconWrapper__settingRecord"  onClick={() => toggleAutoplay()} title='Autoplay on/off'>
           <FontAwesomeIcon icon={['fas', apBtnIcon ]}/>
-        </button>
-        <button className="Button IconWrapper IconWrapper__settingRecord"  onClick={() => toggleFullScreen()} title='Full screen on/off'>
-          <FontAwesomeIcon icon={['fas', fsBtnIcon ]}/>
         </button>
         <button className="Button IconWrapper IconWrapper__settingRecord"  onClick={() => toggleFullScreen()} title='Full screen on/off'>
           <FontAwesomeIcon icon={['fas', fsBtnIcon ]}/>
@@ -231,7 +257,11 @@ const Game: React.FC = () => {
       </div>
 
       <div className={`BoardWrapper ${gameConfig.isDarkTheme ? 'DarkTheme' : ''}`} style={setGameWrapperStyle()}>
-        <div className="ResultOverLay">{}</div>
+        <div className={`ResultOverLay ${result ? 'ShowResult' : ''} ${gameConfig.isDarkTheme ? 'DarkTheme' : ''}`}
+          onClick ={() => setResult('')}
+          >
+          {result}
+        </div>
         <div className="GridWrapper">{setGameGrid(gameConfig)}</div>
         <TileList tileList={tileList} gameConfig={gameConfig} />
       </div>
@@ -241,28 +271,16 @@ const Game: React.FC = () => {
         musicConfig={musicConfig}
         openSettings={() => toggleModal(modalOpened)}
       />
-      <div className="Description">
-        <h3>Controlls:</h3>
-        <p>
-          <b>Gameplay</b>: Arrows or W, S, A, D
-        </p>
-        <p>
-          <b>Start new game</b>: N
-        </p>
-        <p>
-          <b>Start/stop music</b>: M
-        </p>
-        <p>
-          <b>Game settings</b>: C
-        </p>
-        <p>
-          <b>Escape game settings</b>: Esc / C
-        </p>
-      </div>
       <Settings
         openModal={modalOpened}
         passToParentGameConfig={(newConfig: GameConfig) => { setGameConfig(newConfig); }}
         closeSettings={() => toggleModal(true)}
+        gameConfig={gameConfig}
+      />
+      <ControlKeys
+        openModal={controlKeysOpened}
+        passToParentGameConfig={(newConfig: GameConfig) => { setGameConfig(newConfig); }}
+        closeSettings={() => toggleControlKeys(true)}
         gameConfig={gameConfig}
       />
     </div>
