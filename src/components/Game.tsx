@@ -138,12 +138,14 @@ const Game: React.FC = () => {
           if (addRandomTiles(cellMatrix, collapsedList, gameConfig.newTilesQuantity).statusResult &&
           addRandomTiles(cellMatrix, collapsedList, gameConfig.newTilesQuantity).statusResult === 'over') {
             setResult('Game over...');
+            setStartbtnico('gamepad');
             setMusicConfig(stopMusicConfig);
             setTileList([]);
             setGameConfig({
               ...gameConfig,
               gameCount: 0
             })
+            localStorage.setItem('tileList', JSON.stringify(tileList));
           }
 
           setTileList(expandedList);
