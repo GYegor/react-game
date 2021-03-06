@@ -11,6 +11,9 @@
 .GameWrapper {
   width: 100%;
   position: relative;
+  &.DarkTheme {
+    color: #88919a;
+  }
 }
 
 .BoardWrapper {
@@ -19,18 +22,21 @@
   position: relative;
   border-radius: 6px;
   // cursor: default;
-  background: rgb(187, 173, 160);
+  background: #bbada0;
+  &.DarkTheme {
+    background: #44525f;
+  }
 }
 
 .GridWrapper {
   position: absolute;
   z-index: 1;
-  display:flex;
+  display: flex;
   flex-direction: column;
 }
 
 .Row {
-  display:flex;
+  display: flex;
   margin-bottom: 10px;
   &.Row:last-child {
     margin-bottom: 0;
@@ -41,9 +47,12 @@
   width: 100px;
   height: 100px;
   border-radius: 3px;
-  background: rgba(238, 228, 218, 0.35);
+  background: #eee4da59;
   .Cell:last-child {
     margin-right: 0;
+  }
+  &.DarkTheme {
+    background: #111b2559;
   }
 }
 
@@ -65,29 +74,105 @@
 }
 
 .Value {
-  &-2 { background: rgb(238, 228, 218); }
-  &-4 { background: rgb(237, 224, 200); }
+  &-2 {
+    background: #eee4da;
+    &.DarkTheme {
+      background: #111b25;
+    }  
+  }
+  &-4 {
+    background: #ede0c8;
+    &.DarkTheme {
+      background: #121f37;
+    }  
+  }
 }
 
-.Value-8, .Value-16, .Value-32, .Value-64 {  color: rgb(249, 246, 242); }
+.Value-8,
+.Value-16,
+.Value-32,
+.Value-64 {
+  color: #f9f6f2;
+  &.DarkTheme {
+    color: #06090d;
+  }  
+}
 .Value {
-  &-8 { background: rgb(242, 177, 121); }
-  &-16 { background: rgb(245, 149, 99); }
-  &-32 { background: rgb(246, 124, 95); }
-  &-64 { background: rgb(246, 94, 59); }
+  &-8 {
+    background: #f2b179;
+    &.DarkTheme {
+      background: #0d4e86;
+    }  
+  }
+  &-16 {
+    background: #f59563;
+    &.DarkTheme {
+      background: #0a6a9c;
+    }  
+  }
+  &-32 {
+    background: #f67c5f;
+    &.DarkTheme {
+      background: #0983a0;
+    }  
+  }
+  &-64 {
+    background: #f65e3b;
+    &.DarkTheme {
+      background: #09a1c4;
+    }  
+  }
 }
 
-.Value-128, .Value-256, .Value-512 { color: rgb(249, 246, 242); }
+.Value-128,
+.Value-256,
+.Value-512 {
+  color: #f9f6f2;
+  &.DarkTheme {
+    color: #06090d;
+  }  
+}
 .Value {
-  &-128 { background: rgb(237, 207, 114); }
-  &-256 { background: rgb(237, 204, 97); }
-  &-512 { background: rgb(237, 200, 80); }
+  &-128 {
+    background: #edcf72;
+    &.DarkTheme {
+      background: #12308d;
+    }  
+  }
+  &-256 {
+    background: #edcc61;
+    &.DarkTheme {
+      background: #12339e;
+    }  
+  }
+  &-512 {
+    background: #edc850;
+    &.DarkTheme {
+      background: #1237af;
+    }  
+  }
 }
 
-.Value-1024, .Value-2048 { color: rgb(249, 246, 242); }
+.Value-1024,
+.Value-2048 {
+  color: #f9f6f2;
+  &.DarkTheme {
+    color: #06090d;
+  }  
+}
 .Value {
-  &-1024 { background: rgb(237, 197, 63); }
-  &-2048 { background: rgb(237, 194, 46); }
+  &-1024 {
+    background: #edc53f;
+    &.DarkTheme {
+      background: #123ac0;
+    }  
+  }
+  &-2048 {
+    background: #edc02c;
+    &.DarkTheme {
+      background: #123fd3;
+    }  
+  }
 }
 
 .Merged {
@@ -97,13 +182,16 @@
 
 @keyframes merge {
   0% {
-    transform: scale(0.5); }
+    transform: scale(0.5);
+  }
 
   50% {
-    transform: scale(1.1); }
+    transform: scale(1.1);
+  }
 
   100% {
-    transform: scale(1); }
+    transform: scale(1);
+  }
 }
 
 .Controls {
@@ -120,9 +208,9 @@
 
 .Button {
   background: none;
-  color:none;
+  color: none;
   border: none;
-  outline:none;
+  outline: none;
 }
 
 .IconWrapper {
@@ -130,6 +218,9 @@
   font-size: 2rem;
   cursor: pointer;
   color: #776e65;
+  &.DarkTheme {
+    color: #88919a;
+  }  
   &:active {
     transform: scale(0.9);
   }
@@ -160,13 +251,13 @@
   position: fixed;
   z-index: 50;
   top: 21%;
-  left: calc(50% - 205px);
+  left: calc(50% - 200px);
   height: 260px;
   width: 400px;
-  border: 5px solid #998e84;
+  // border: 5px solid #998e84;
   border-radius: 6px;
-  background-color: rgba(250, 248, 240, .8);
-  box-shadow: 13px 11px 92px 3px rgba(92, 78, 69, 0.65);
+  background-color: #faf8f0cc;
+  box-shadow: 13px 11px 92px 3px #5c4e45a6;
   visibility: hidden;
   &.OpenModal {
     display: flex;
@@ -180,8 +271,12 @@
     display: flex;
     flex-direction: column;
   }
+  &.DarkTheme {
+    // border: 5px solid #66717b;
+    background-color: #05070fcc;
+    box-shadow: 13px 11px 92px 3px #a3b1ba;
+  }
 }
-
 
 .BackDrop {
   display: none;
@@ -198,28 +293,47 @@
   }
 }
 
-
 @keyframes modal-appear {
   0% {
-    transform: scale(0.5); }
+    transform: scale(0.5);
+  }
 
   50% {
-    transform: scale(1.05); }
+    transform: scale(1.05);
+  }
 
   100% {
-    transform: scale(1); }
+    transform: scale(1);
+  }
 }
 
 @keyframes backdrop-appear {
   0% {
-    opacity: 0; }
+    opacity: 0;
+  }
   100% {
-    opacity: 1; }
+    opacity: 1;
+  }
 }
 // #endregion MODAL DIALOG
 
 .SettingRecordWrapper {
   display: flex;
   align-items: center;
+  .Value {
+    margin: 6px 0;
+    width: 50px;
+    text-align: center;
+  }
+  .Name {
+    width: 100px;
+  }
+  .IconContainer {
+    width: 21px;
+  }
+  .HideBtn {
+    display: none;
+    cursor: unset;
+  }
 
 }

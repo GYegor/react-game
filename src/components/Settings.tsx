@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import useSound from 'use-sound';
-import swishTiles from  '../assets/swish.mp3'
+import click from  '../assets/click.wav'
 
 import { boardWidth, ControlsProps, GameConfig, RowSize, SettingRecordType, SettingsProps } from '../App.model';
 import SettingRecord from './SettingRecord';
@@ -9,6 +9,8 @@ import SettingRecord from './SettingRecord';
 const Settings: React.FC<SettingsProps> = ({ openModal, passToParentGameConfig, gameConfig, closeSettings }) => {
 
   const [ curGameConfig, setGameConfig ] = useState(gameConfig)
+  const [ clickSound ] = useSound(click, { volume: 0.5 });
+
 
   const setGridConfig = ( size: RowSize): Omit<GameConfig, 'newTilesQuantity'> => {
     const gapCoeff = 1/8
@@ -20,27 +22,24 @@ const Settings: React.FC<SettingsProps> = ({ openModal, passToParentGameConfig, 
   const setNewRowSize = (size: RowSize) => {
     setGameConfig({...curGameConfig, ...setGridConfig(size)});
     passToParentGameConfig({...curGameConfig, ...setGridConfig(size)});
-
-
-    // changeGameConfig(setGameConfig(curGameConfig));
-
   }
-  const setNewTilesQuantitys = (size: RowSize) => {
+  const setNewTilesQuantitys = (newTilesQuantity: number) => {
     setGameConfig(curGameConfig);
-
-    // changeGameConfig(setGameConfig(curGameConfig));
+    setGameConfig({...curGameConfig, newTilesQuantity});
+    passToParentGameConfig({...curGameConfig, newTilesQuantity});
   }
 
-  const setColorTheme = (size: string) => {
-    // setRowSize(size);
-    // changeGridConfig(SetGridConfig(size));
+  const setColorTheme = (isDarkTheme: boolean) => {
+    setGameConfig({...curGameConfig, isDarkTheme});
+    passToParentGameConfig({...curGameConfig, isDarkTheme});
+
   }
 
 
   return (
     <>
       <div className={`BackDrop ${openModal && "SetBackDrop"}`}></div>
-      <div className={`ModalDlg Description ${openModal && "OpenModal"}`}>
+      <div className={`ModalDlg Description ${openModal && "OpenModal"} ${gameConfig.isDarkTheme ? 'DarkTheme' : ''}`}>
         <div className="SettingsContentWrapper">
           <h3>Game settins:</h3>
           <SettingRecord
@@ -53,13 +52,19 @@ const Settings: React.FC<SettingsProps> = ({ openModal, passToParentGameConfig, 
             gameConfig={gameConfig}
             settingRecordType={SettingRecordType.NewTiles}
             value={curGameConfig.newTilesQuantity}
-            getNewValue={(value) => setNewTilesQuantitys(value as number)}
+            getNewValue={(value) => setNewTilesQuantitys(value)}
+          />
+          <SettingRecord
+            gameConfig={gameConfig}
+            settingRecordType={SettingRecordType.ColorTheme}
+            booleanValue={curGameConfig.isDarkTheme}
+            getNewBooleanValue={(value) => setColorTheme(value)}
           />
           {/* <SettingRecord settingRecordType={SettingRecordType.ColorTheme} value={colorTheme} getNewValue={(value) => setColorTheme(value as string)} /> */}
-          <button className="Button IconWrapper IconWrapper__closeBtn">
+          <button className={`Button IconWrapper IconWrapper__closeBtn ${gameConfig.isDarkTheme ? 'DarkTheme' : ''}`}>
             <FontAwesomeIcon
               icon={["fas", "times"]}
-              onClick={() => closeSettings()}
+              onClick={() =>  (clickSound(), closeSettings())}
               title="Close (Esc)"
             />
           </button>

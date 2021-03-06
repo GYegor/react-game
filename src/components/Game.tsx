@@ -12,7 +12,6 @@ import {
   MusicConfig,
   RowSize,
   GameConfig,
-  quantity,
   boardWidth,
 } from '../App.model';
 import '../App.scss';
@@ -21,6 +20,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Controls from './Controls';
 import Settings from './Settings';
 import { IconName } from '@fortawesome/fontawesome-svg-core';
+import click from  '../assets/click.wav'
+
 
 const Game: React.FC = () => {
 
@@ -41,6 +42,7 @@ const Game: React.FC = () => {
     tileWidth: 100,
     tileGap: 10,
     newTilesQuantity: 2,
+    isDarkTheme: false,
   }
 
   const [ tileList, setTileList ] = useState([] as TileConfig[]);   // set tileList !!!
@@ -48,8 +50,8 @@ const Game: React.FC = () => {
   const [ modalOpened, setModalOpened ] = useState(false)
   const [ play, { stop, sound } ] = useSound(backgroundMusic);
   const [ swish ] = useSound(swishSound);
+  const [ clickSound ] = useSound(click, { volume: 0.5 });
   const [ gameConfig, setGameConfig ] = useState(defaultGameConfig);
-
 
   const cellMatrix = getCellMatrix(gameConfig.size)
 
@@ -59,7 +61,7 @@ const Game: React.FC = () => {
       return (
         <div key={`cell-row-${i+1}`} className='Row' style={{ height: gridConfig.tileWidth, marginBottom: gridConfig.tileGap }}>
           {Array.from({ length: gridConfig.size }, ((_el, j) => (
-            <div key={`cell-col-${j+1}`} className='Cell' style={{ height: gridConfig.tileWidth, width: gridConfig.tileWidth, marginRight: gridConfig.tileGap }}></div>
+            <div key={`cell-col-${j+1}`} className={`Cell ${gameConfig.isDarkTheme ? 'DarkTheme' : ''}`} style={{ height: gridConfig.tileWidth, width: gridConfig.tileWidth, marginRight: gridConfig.tileGap }}></div>
           )))}
         </div>
       );
@@ -98,7 +100,7 @@ const Game: React.FC = () => {
     //       sound()
     //         const collapsedList = getCollapsedTileList(tileList, direction, gameConfig.size);
     //         // setTileList(collapsedList)
-    //         const expandedList = addRandomTiles(cellMatrix, collapsedList, quantity);
+    //         const expandedList = addRandomTiles(cellMatrix, collapsedList, gameConfig.newTilesQuantity);
     //         setTileList(expandedList)
 
 
@@ -124,7 +126,7 @@ const Game: React.FC = () => {
     stop(id);
     setMusicConfig(stopMusicConfig)
 
-    const expandedList = addRandomTiles(cellMatrix, [], quantity);
+    const expandedList = addRandomTiles(cellMatrix, [], gameConfig.newTilesQuantity);
     setTileList(expandedList)
     id = play()
     sound.loop(true);
@@ -154,6 +156,7 @@ const Game: React.FC = () => {
   const [ isAutoplay, setAutoplay ] = useState(false);
   const [ apBtnIcon, setApbtnico ] = useState('play' as IconName);
   const toggleAutoplay = () => {
+    clickSound();
     setAutoplay(!isAutoplay);
     if (!isAutoplay) {
       setApbtnico('times-circle')
@@ -171,7 +174,7 @@ const Game: React.FC = () => {
         const idx = Math.floor(Math.random() * 4)
         const direction = ['up', 'down', 'right', 'left'][Math.floor(Math.random() * 4)] as CollapseDirection;
         const collapsedList = getCollapsedTileList(tileList, direction, gameConfig.size);
-        const expandedList = addRandomTiles(cellMatrix, collapsedList, quantity);
+        const expandedList = addRandomTiles(cellMatrix, collapsedList, gameConfig.newTilesQuantity);
         setTileList(expandedList)
       }, 600);
       return () => {
@@ -184,6 +187,7 @@ const Game: React.FC = () => {
 //#region FULLSCREEN 
   const [ fsBtnIcon, setFsbtnico ] = useState('expand-alt' as IconName)
   const toggleFullScreen = () => {
+    clickSound();
     if (fsBtnIcon === 'expand-alt') {
       (document.documentElement as HTMLElement & {
         webkitRequestFullscreen(): Promise<void>;
@@ -208,7 +212,8 @@ const Game: React.FC = () => {
 //#endregion FULLSCREEN 
 
   return (
-    <div className="GameWrapper">
+    <div className={`GameWrapper ${gameConfig.isDarkTheme ? 'DarkTheme' : ''}`}>
+
       <div style={{
           position: 'fixed',
           top: 0,
@@ -217,15 +222,18 @@ const Game: React.FC = () => {
         <button className="Button IconWrapper IconWrapper__settingRecord"  onClick={() => toggleAutoplay()} title='Autoplay on/off'>
           <FontAwesomeIcon icon={['fas', apBtnIcon ]}/>
         </button>
-
+        <button className="Button IconWrapper IconWrapper__settingRecord"  onClick={() => toggleFullScreen()} title='Full screen on/off'>
+          <FontAwesomeIcon icon={['fas', fsBtnIcon ]}/>
+        </button>
         <button className="Button IconWrapper IconWrapper__settingRecord"  onClick={() => toggleFullScreen()} title='Full screen on/off'>
           <FontAwesomeIcon icon={['fas', fsBtnIcon ]}/>
         </button>
       </div>
 
-      <div className="BoardWrapper" style={setGameWrapperStyle()}>
+      <div className={`BoardWrapper ${gameConfig.isDarkTheme ? 'DarkTheme' : ''}`} style={setGameWrapperStyle()}>
+        <div className="ResultOverLay">{}</div>
         <div className="GridWrapper">{setGameGrid(gameConfig)}</div>
-        <TileList tileList={tileList} gridConfig={gameConfig} />
+        <TileList tileList={tileList} gameConfig={gameConfig} />
       </div>
       <Controls
         startNewGame={startNewGame}

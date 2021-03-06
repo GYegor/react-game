@@ -12,7 +12,7 @@ export interface GameConfig {
   newTilesQuantity: number
   tileWidth: number;
   tileGap: number; 
-  colorTheme?: string;
+  isDarkTheme?: boolean;
   soundVolume?: number;
   soundOn?: number;
  }
@@ -35,8 +35,9 @@ export interface SettingRecordProps {
   gameConfig: GameConfig;
   settingRecordType: SettingRecordType;
   value?: number;
-  stringValue?:string;
-  getNewValue: (value: number) => void;
+  booleanValue?:boolean;
+  getNewValue?: (value: number) => void;
+  getNewBooleanValue?: (value: boolean) => void;
 }
 
 export enum SettingRecordType {
@@ -59,7 +60,7 @@ export interface MusicConfig {
 export interface TileProps {
   tile: TileConfig;
   enterLeaveStyles: any;
-  gridConfig: GameConfig;
+  gameConfig: GameConfig;
 }
 
 export interface TileConfig {
@@ -76,7 +77,7 @@ export type TileValue = 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 512 | 1024 | 2048
 
 export interface TileListProps {
     tileList: TileConfig[];
-    gridConfig: GameConfig;
+    gameConfig: GameConfig;
 }
 
 export type CollapseDirection = 'right' | 'left' | 'up' | 'down';
