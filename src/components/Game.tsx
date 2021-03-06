@@ -52,7 +52,6 @@ const Game: React.FC = () => {
 
   const config = localStorage.getItem('gameConfig')
   const [ gameConfig, setGameConfig ] = useState(config ?  JSON.parse(config) as GameConfig : defaultGameConfig);  
-  console.log(list && list.length); // set tileList !!!
   const [ startBtnIcon, setStartbtnico ] = useState((list && JSON.parse(list).length) ? 'sync-alt' : 'gamepad' as IconName);
   const [ gameOn, setGameOn ] = useState(false);
 
@@ -120,6 +119,11 @@ const Game: React.FC = () => {
         if (direction) {
           sound()
           const collapsedList = getCollapsedTileList(tileList, direction, gameConfig.size);
+          if (collapsedList.find(tile => tile.value === 2048)) {
+            setResult('You WIN!!!');
+            setStartbtnico('gamepad');
+          }
+          
           const addedCount = collapsedList.reduce((sum, tile) => {
             if (tile.merged && tile.value) {
               sum += tile.value
@@ -130,8 +134,19 @@ const Game: React.FC = () => {
           const gameCount = gameConfig.gameCount ? gameConfig.gameCount + addedCount : addedCount;
           setGameConfig({ ...gameConfig, gameCount })
 
-          const expandedList = addRandomTiles(cellMatrix, collapsedList, gameConfig.newTilesQuantity);
-          setTileList(expandedList)
+          const expandedList = addRandomTiles(cellMatrix, collapsedList, gameConfig.newTilesQuantity).tileList;
+          if (addRandomTiles(cellMatrix, collapsedList, gameConfig.newTilesQuantity).statusResult &&
+          addRandomTiles(cellMatrix, collapsedList, gameConfig.newTilesQuantity).statusResult === 'over') {
+            setResult('Game over...');
+            setMusicConfig(stopMusicConfig);
+            setTileList([]);
+            setGameConfig({
+              ...gameConfig,
+              gameCount: 0
+            })
+          }
+
+          setTileList(expandedList);
 
           direction = '' as CollapseDirection;
         }
@@ -165,7 +180,7 @@ const startNewGame = (shouldStopAutoplay: boolean = true) => {
       stop(id);
       setMusicConfig(stopMusicConfig)
       
-      const expandedList = addRandomTiles(cellMatrix, [], gameConfig.newTilesQuantity);
+      const expandedList = addRandomTiles(cellMatrix, [], gameConfig.newTilesQuantity).tileList;
       setTileList(expandedList)
       id = play()
       sound.loop(true);
@@ -186,7 +201,7 @@ const startNewGame = (shouldStopAutoplay: boolean = true) => {
     stop(id);
     setMusicConfig(stopMusicConfig)
     
-    const expandedList = addRandomTiles(cellMatrix, [], gameConfig.newTilesQuantity);
+    const expandedList = addRandomTiles(cellMatrix, [], gameConfig.newTilesQuantity).tileList;
     setTileList(expandedList)
     id = play()
     sound.loop(true);
@@ -242,7 +257,7 @@ useEffect(() => {
       const idx = Math.floor(Math.random() * 4)
       const direction = ['up', 'down', 'right', 'left'][Math.floor(Math.random() * 4)] as CollapseDirection;
       const collapsedList = getCollapsedTileList(tileList, direction, gameConfig.size);
-      const expandedList = addRandomTiles(cellMatrix, collapsedList, gameConfig.newTilesQuantity);
+      const expandedList = addRandomTiles(cellMatrix, collapsedList, gameConfig.newTilesQuantity).tileList;
       setTileList(expandedList)
     }, 600);
     return () => {

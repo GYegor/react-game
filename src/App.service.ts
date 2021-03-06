@@ -17,6 +17,9 @@ export const getEmptyCells = (tileList: TileConfig[], cellMatrix: TileConfig[]) 
 );
 
 export const addRandomTiles = ( cellMatrix: TileConfig[], tileList: TileConfig[], tilesQuantity = 2 ) => {
+  const clearedTilelistLength = tileList.filter(tile => !tile.shouldDelete).length;
+
+  tilesQuantity = ((cellMatrix.length - clearedTilelistLength) < tilesQuantity) ? (cellMatrix.length - clearedTilelistLength) : tilesQuantity;
   let curEmptyCells = getEmptyCells(tileList, cellMatrix);
   let randomCells = [] as TileConfig[];
 
@@ -24,8 +27,10 @@ export const addRandomTiles = ( cellMatrix: TileConfig[], tileList: TileConfig[]
     randomCells.push({ ...curEmptyCells[Math.floor(Math.random() * curEmptyCells.length)], value: 2, key: uuidv4(), appeared: true})
     curEmptyCells = getEmptyCells([...tileList, ...randomCells], cellMatrix);
   })
-
-  return [...tileList, ...randomCells ]
+  if (cellMatrix.length === clearedTilelistLength) {
+    return ({ tileList, statusResult: 'over' })
+  }
+  return { tileList: [...tileList, ...randomCells ] }
 }
 
 const reduceTileLine = (line: TileConfig[]) => (
