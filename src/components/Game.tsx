@@ -46,8 +46,6 @@ const Game: React.FC = () => {
   const [ tileList, setTileList ] = useState([] as TileConfig[]);   // set tileList !!!
   const [ musicConfig, setMusicConfig ] = useState(playMusicConfig)
   const [ modalOpened, setModalOpened ] = useState(false)
-  const [ fsbtnico, setFsbtnico ] = useState('expand-alt' as IconName)
-
   const [ play, { stop, sound } ] = useSound(backgroundMusic);
   const [ swish ] = useSound(swishSound);
   const [ gameConfig, setGameConfig ] = useState(defaultGameConfig);
@@ -70,49 +68,49 @@ const Game: React.FC = () => {
 
   // срабатывает полсе каждого рендера, при условии что изменились зависимости ( ..., [ ...] )
   useEffect(() => {
-    const handleKeyPress = (event: KeyboardEvent) => {
-        const { code } = event
-        let sound = swish;
-        let direction: CollapseDirection = '' as CollapseDirection;
-        if (code === Keys.ArrowUp || code === Keys.KeyUp) {
-          direction = 'up';
-          sound = swish;
-        } else if  (code === Keys.ArrowDown || code === Keys.KeyDown) {
-          sound = swish;
-          direction = 'down';
-        }  else if  (code === Keys.ArrowRight || code === Keys.KeyRight) {
-          sound = swish;
-          direction = 'right';
-        } else if  (code === Keys.ArrowLeft || code === Keys.KeyLeft) {
-          sound = swish;
-          direction = 'left';
-        } else if  (code === Keys.EscapeSettings) {
-          setModalOpened(false);
-          setFsbtnico('expand-alt');
+    // const handleKeyPress = (event: KeyboardEvent) => {
+    //     const { code } = event
+    //     let sound = swish;
+    //     let direction: CollapseDirection = '' as CollapseDirection;
+    //     if (code === Keys.ArrowUp || code === Keys.KeyUp) {
+    //       direction = 'up';
+    //       sound = swish;
+    //     } else if  (code === Keys.ArrowDown || code === Keys.KeyDown) {
+    //       sound = swish;
+    //       direction = 'down';
+    //     }  else if  (code === Keys.ArrowRight || code === Keys.KeyRight) {
+    //       sound = swish;
+    //       direction = 'right';
+    //     } else if  (code === Keys.ArrowLeft || code === Keys.KeyLeft) {
+    //       sound = swish;
+    //       direction = 'left';
+    //     } else if  (code === Keys.EscapeSettings) {
+    //       setModalOpened(false);
+    //       setFsbtnico('expand-alt');
 
-        } if  (code === Keys.NewGame) {
-          startNewGame()
-        } if  (code === Keys.Settings) {
-          toggleModal(true)
-        }
+    //     } if  (code === Keys.NewGame) {
+    //       startNewGame()
+    //     } if  (code === Keys.Settings) {
+    //       toggleModal(true)
+    //     }
 
-        if (direction) {
-          sound()
-            const collapsedList = getCollapsedTileList(tileList, direction, gameConfig.size);
-            // setTileList(collapsedList)
-            const expandedList = addRandomTiles(cellMatrix, collapsedList, quantity);
-            setTileList(expandedList)
-
-
-          direction = '' as CollapseDirection;
-        }
-    }
-    window.addEventListener('keyup', handleKeyPress);
+    //     if (direction) {
+    //       sound()
+    //         const collapsedList = getCollapsedTileList(tileList, direction, gameConfig.size);
+    //         // setTileList(collapsedList)
+    //         const expandedList = addRandomTiles(cellMatrix, collapsedList, quantity);
+    //         setTileList(expandedList)
 
 
-    return () => {
-      window.removeEventListener('keyup', handleKeyPress);
-    }
+    //       direction = '' as CollapseDirection;
+    //     }
+    // }
+    // window.addEventListener('keydown', handleKeyPress);
+
+
+    // return () => {
+    //   window.removeEventListener('keydown', handleKeyPress);
+    // }
   }, [tileList, play])
 
   const setGameWrapperStyle = () => ({
@@ -151,100 +149,63 @@ const Game: React.FC = () => {
     setModalOpened(!isOpened)
   }
 
-  // const changeGridSize = (newSize) => {
-  //   const arr = [2,4,5,6,10]
-  //   const newIdx = arr.indexOf(size) + 1;
-  //   if (arr[newIdx]) {
-  //     setSize(arr[newIdx] as GameSize)
-  //   }
-  // }
 
-  // const toggleFullScreen = () => {
-  //   // toggleFs(!fs);
-  //   if (fsbtnico === 'expand-alt') {
-  //     (document.documentElement as HTMLElement & {
-  //       webkitRequestFullscreen(): Promise<void>;
-  //     }).webkitRequestFullscreen();
-  //   } else {
-  //     (document as Document & {
-  //       webkitExitFullscreen(): Promise<void>;
-  //     }).webkitExitFullscreen();
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   if (!isGameOn
-  //   ) {
-
-  //   }
-
-  // }, [tileList])
-
-
-
+//#region AUTOPLAY
+  const [ isAutoplay, setAutoplay ] = useState(false);
+  const [ apBtnIcon, setApbtnico ] = useState('play' as IconName);
   const toggleAutoplay = () => {
-    // toggleFs(!fs);
-    let a;
-    // if (fsbtnico === 'play') {
+    setAutoplay(!isAutoplay);
+    if (!isAutoplay) {
+      setApbtnico('times-circle')
       startNewGame();
-      setInterval(() => {
+    } else {
+      setApbtnico('play')
+      stop();
+      setMusicConfig(stopMusicConfig);
+      setTileList([]);
+    }
+  }
+  useEffect(() => {
+    if (isAutoplay) {
+      const timeoutIdx = setTimeout(() => {
         const idx = Math.floor(Math.random() * 4)
         const direction = ['up', 'down', 'right', 'left'][Math.floor(Math.random() * 4)] as CollapseDirection;
         const collapsedList = getCollapsedTileList(tileList, direction, gameConfig.size);
         const expandedList = addRandomTiles(cellMatrix, collapsedList, quantity);
         setTileList(expandedList)
-      }, 1000);
+      }, 600);
+      return () => {
+        clearInterval(timeoutIdx);
+      }
+    }
+  }, [tileList, play])
+//#endregion AUTOPLAY
 
-
-    // } else {
-    //   (document as Document & {
-    //     webkitExitFullscreen(): Promise<void>;
-    //   }).webkitExitFullscreen();
-    // }
-  }
-
-  // const [fs, toggleFs] = useState(false)
-
+//#region FULLSCREEN 
+  const [ fsBtnIcon, setFsbtnico ] = useState('expand-alt' as IconName)
   const toggleFullScreen = () => {
-    // toggleFs(!fs);
-    if (fsbtnico === 'expand-alt') {
+    if (fsBtnIcon === 'expand-alt') {
       (document.documentElement as HTMLElement & {
         webkitRequestFullscreen(): Promise<void>;
       }).webkitRequestFullscreen();
-      // setFsbtnico('compress-alt');
-
-
     } else {
       (document as Document & {
         webkitExitFullscreen(): Promise<void>;
       }).webkitExitFullscreen();
-      // setFsbtnico('expand-alt')
-
     }
   }
-
-  const [fs, toggleFs] = useState(false)
-
   useEffect(() => {
     const handleFullscreen = () => {
-      toggleFs(!fs);
-        if (fsbtnico !== 'expand-alt') {
-          setFsbtnico('expand-alt')
-        } else {
-          setFsbtnico('compress-alt');
-        }
+      if (fsBtnIcon !== 'expand-alt') {
+        setFsbtnico('expand-alt')
+      } else {
+        setFsbtnico('compress-alt');
+      }
     }
-
-
-
     document.addEventListener('webkitfullscreenchange', handleFullscreen)
-
-    return () => {
-      document.removeEventListener('webkitfullscreenchange', handleFullscreen);
-    }
+    return () => { document.removeEventListener('webkitfullscreenchange', handleFullscreen); }
   }, [toggleFullScreen])
-
-
+//#endregion FULLSCREEN 
 
   return (
     <div className="GameWrapper">
@@ -254,11 +215,11 @@ const Game: React.FC = () => {
           right: '50%',
           transform: 'translate(250px)'}}>
         <button className="Button IconWrapper IconWrapper__settingRecord"  onClick={() => toggleAutoplay()} title='Autoplay on/off'>
-          <FontAwesomeIcon icon={['fas', fsbtnico ]}/>
+          <FontAwesomeIcon icon={['fas', apBtnIcon ]}/>
         </button>
 
-        <button className="Button IconWrapper IconWrapper__settingRecord"  onClick={() => toggleFullScreen()} title='Full Screen on/off'>
-          <FontAwesomeIcon icon={['fas', fsbtnico ]}/>
+        <button className="Button IconWrapper IconWrapper__settingRecord"  onClick={() => toggleFullScreen()} title='Full screen on/off'>
+          <FontAwesomeIcon icon={['fas', fsBtnIcon ]}/>
         </button>
       </div>
 

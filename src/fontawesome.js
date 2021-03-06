@@ -12,7 +12,9 @@ import {
   faCaretLeft,
   faTimes,
   faCompressAlt,
-  faExpandAlt
+  faExpandAlt,
+  faPlay,
+  faTimesCircle
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
@@ -28,5 +30,7 @@ library.add(
   faCaretLeft,
   faTimes,
   faExpandAlt,
-  faCompressAlt
+  faCompressAlt,
+  faPlay,
+  faTimesCircle
 );
