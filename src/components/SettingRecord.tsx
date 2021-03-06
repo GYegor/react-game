@@ -3,14 +3,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import click from  '../assets/click.wav'
 
 
-
 import { SettingRecordProps, SettingRecordType } from '../App.model';
 import useSound from 'use-sound';
 
 const SettingRecord: React.FC<SettingRecordProps> = ({ settingRecordType, value, booleanValue, getNewValue, getNewBooleanValue, gameConfig }) => {
 
   const [ clickSound ] = useSound(click, { volume: 0.5 });
-
 
   const handleValue = (increase: boolean) => {
     clickSound();

@@ -22,16 +22,16 @@ return (
               <b>Gameplay</b>: Arrows or W, S, A, D
             </p>
             <p>
-              <b>Start new game</b>: N
+              <b>Game strat / finish</b>: N
             </p>
             <p>
-              <b>Start/stop music</b>: M
+              <b> Music start / stop</b>: M
             </p>
             <p>
               <b>Game settings</b>: C
             </p>
             <p>
-              <b>Escape game settings</b>: Esc / C
+              <b>Escape game settings</b>: Esc
             </p>
           </div>          
           <button className={`Button IconWrapper IconWrapper__closeBtn ${gameConfig.isDarkTheme ? 'DarkTheme' : ''}`}>

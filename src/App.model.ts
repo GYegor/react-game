@@ -15,6 +15,7 @@ export interface GameConfig {
   isDarkTheme?: boolean;
   soundVolume?: number;
   soundOn?: number;
+  gameCount?: number | string;
  }
 
 export interface ControlsProps {
@@ -22,6 +23,7 @@ export interface ControlsProps {
   openSettings: () => void;
   toggleMusic: () => void;
   musicConfig: MusicConfig;
+  startBtnIcon: IconName;
 }
 
 export interface SettingsProps {

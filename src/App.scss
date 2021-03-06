@@ -263,6 +263,14 @@
     right: 0;
     margin: 6px;
   }
+  &__upperBtn {
+    width: 30px;
+    font-size: 1.5rem;
+  }
+  .HideBtn {
+    display: none;
+    cursor: unset;
+  }
 }
 
 .Description {

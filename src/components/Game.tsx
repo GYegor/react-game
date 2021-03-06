@@ -44,6 +44,7 @@ const Game: React.FC = () => {
     tileGap: 10,
     newTilesQuantity: 2,
     isDarkTheme: false,
+    gameCount: 0,
   }
 
   const [ tileList, setTileList ] = useState([] as TileConfig[]);   // set tileList !!!
@@ -74,48 +75,50 @@ const Game: React.FC = () => {
 
   // срабатывает полсе каждого рендера, при условии что изменились зависимости ( ..., [ ...] )
   useEffect(() => {
-    // const handleKeyPress = (event: KeyboardEvent) => {
-    //     const { code } = event
-    //     let sound = swish;
-    //     let direction: CollapseDirection = '' as CollapseDirection;
-    //     if (code === Keys.ArrowUp || code === Keys.KeyUp) {
-    //       direction = 'up';
-    //       sound = swish;
-    //     } else if  (code === Keys.ArrowDown || code === Keys.KeyDown) {
-    //       sound = swish;
-    //       direction = 'down';
-    //     }  else if  (code === Keys.ArrowRight || code === Keys.KeyRight) {
-    //       sound = swish;
-    //       direction = 'right';
-    //     } else if  (code === Keys.ArrowLeft || code === Keys.KeyLeft) {
-    //       sound = swish;
-    //       direction = 'left';
-    //     } else if  (code === Keys.EscapeSettings) {
-    //       setModalOpened(false);
-    //       setFsbtnico('expand-alt');
+    // if (gameOn) {
+    const handleKeyPress = (event: KeyboardEvent) => {
+        const { code } = event
+        let sound = swish;
+        let direction: CollapseDirection = '' as CollapseDirection;
+        if (code === Keys.ArrowUp || code === Keys.KeyUp) {
+          direction = 'up';
+          sound = swish;
+        } else if  (code === Keys.ArrowDown || code === Keys.KeyDown) {
+          sound = swish;
+          direction = 'down';
+        }  else if  (code === Keys.ArrowRight || code === Keys.KeyRight) {
+          sound = swish;
+          direction = 'right';
+        } else if  (code === Keys.ArrowLeft || code === Keys.KeyLeft) {
+          sound = swish;
+          direction = 'left';
+        } else if  (code === Keys.EscapeSettings) {
+          setModalOpened(false);
+          setFsbtnico('expand-alt');
+        } if  (code === Keys.Settings) {
+          toggleModal(modalOpened)
+        } if  (code === Keys.NewGame) {
+          startNewGame();
+        } 
+        
 
-    //     } if  (code === Keys.NewGame) {
-    //       startNewGame()
-    //     } if  (code === Keys.Settings) {
-    //       toggleModal(true)
-    //     }
-
-    //     if (direction) {
-    //       sound()
-    //         const collapsedList = getCollapsedTileList(tileList, direction, gameConfig.size);
-    //         // setTileList(collapsedList)
-    //         const expandedList = addRandomTiles(cellMatrix, collapsedList, gameConfig.newTilesQuantity);
-    //         setTileList(expandedList)
-
-
-    //       direction = '' as CollapseDirection;
-    //     }
-    // }
-    // window.addEventListener('keydown', handleKeyPress);
+        if (direction) {
+          sound()
+            const collapsedList = getCollapsedTileList(tileList, direction, gameConfig.size);
+            // setTileList(collapsedList)
+            const expandedList = addRandomTiles(cellMatrix, collapsedList, gameConfig.newTilesQuantity);
+            setTileList(expandedList)
 
 
-    // return () => {
-    //   window.removeEventListener('keydown', handleKeyPress);
+          direction = '' as CollapseDirection;
+        }
+    }
+    window.addEventListener('keydown', handleKeyPress);
+
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    }
     // }
   }, [tileList, play])
 
@@ -125,16 +128,40 @@ const Game: React.FC = () => {
     padding: gameConfig.tileGap
   })
 
-  const startNewGame = (shouldStopAutoplay: boolean = true) => {
-    if (shouldStopAutoplay) {
-      setAutoplay(false);
-      setApbtnico('play')
+//#endregion STARTGAME
+const [ gameOn, setGameOn ] = useState(false);
+const [ startBtnIcon, setStartbtnico ] = useState('gamepad' as IconName);
+const startNewGame = (shouldStopAutoplay: boolean = true) => {
+  if (shouldStopAutoplay) {
+    setAutoplay(false);
+    setApbtnico('play')
+    setGameOn(!gameOn);
+
+    if (startBtnIcon === 'gamepad') {
+      setStartbtnico('sync-alt')
+      setResult('');
+      let id: any
+      stop(id);
+      setMusicConfig(stopMusicConfig)
+      
+      const expandedList = addRandomTiles(cellMatrix, [], gameConfig.newTilesQuantity);
+      setTileList(expandedList)
+      id = play()
+      sound.loop(true);
+      sound.fade(0,0.2,2000, id)
+    } else {
+      console.log('sdvsdvsvsv');
+      setStartbtnico('gamepad')
+      stop();
+      setMusicConfig(stopMusicConfig);
+      setTileList([]);
     }
+  } else {
     setResult('');
     let id: any
     stop(id);
     setMusicConfig(stopMusicConfig)
-
+    
     const expandedList = addRandomTiles(cellMatrix, [], gameConfig.newTilesQuantity);
     setTileList(expandedList)
     id = play()
@@ -142,27 +169,29 @@ const Game: React.FC = () => {
     sound.fade(0,0.2,2000, id)
   }
 
-  const toggleMusic = (config: MusicConfig) => {
-    // setMusicConfig(true)
-    if (config.musicOn) {
-      sound.fade(0.2,0,2000);
-      stop();
-      setMusicConfig(playMusicConfig);
-    } else {
-      play();
-      sound.loop(true);
-      sound.fade(0,0.2,2000);
-      setMusicConfig(stopMusicConfig);
-    }
+}
+//#region STARTGAME
+const toggleMusic = (config: MusicConfig) => {
+  // setMusicConfig(true)
+  if (config.musicOn) {
+    sound.fade(0.2,0,2000);
+    stop();
+    setMusicConfig(playMusicConfig);
+  } else {
+    play();
+    sound.loop(true);
+    sound.fade(0,0.2,2000);
+    setMusicConfig(stopMusicConfig);
   }
+}
 
-  const toggleModal = (isOpened: boolean) => {
-    setModalOpened(!isOpened)
-  }
+const toggleModal = (isOpened: boolean) => {
+  setModalOpened(!isOpened)
+}
 
-  const toggleControlKeys = (isOpened: boolean) => {
-    setControlKeysOpened(!isOpened)
-  }
+const toggleControlKeys = (isOpened: boolean) => {
+  setControlKeysOpened(!isOpened)
+}
 
 
 //#region AUTOPLAY
@@ -182,20 +211,20 @@ const toggleAutoplay = () => {
       setTileList([]);
     }
   }
-  useEffect(() => {
-    if (isAutoplay) {
-      const timeoutIdx = setTimeout(() => {
-        const idx = Math.floor(Math.random() * 4)
-        const direction = ['up', 'down', 'right', 'left'][Math.floor(Math.random() * 4)] as CollapseDirection;
-        const collapsedList = getCollapsedTileList(tileList, direction, gameConfig.size);
-        const expandedList = addRandomTiles(cellMatrix, collapsedList, gameConfig.newTilesQuantity);
-        setTileList(expandedList)
-      }, 600);
-      return () => {
-        clearInterval(timeoutIdx);
-      }
+useEffect(() => {
+  if (isAutoplay) {
+    const timeoutIdx = setTimeout(() => {
+      const idx = Math.floor(Math.random() * 4)
+      const direction = ['up', 'down', 'right', 'left'][Math.floor(Math.random() * 4)] as CollapseDirection;
+      const collapsedList = getCollapsedTileList(tileList, direction, gameConfig.size);
+      const expandedList = addRandomTiles(cellMatrix, collapsedList, gameConfig.newTilesQuantity);
+      setTileList(expandedList)
+    }, 600);
+    return () => {
+      clearInterval(timeoutIdx);
     }
-  }, [tileList, play])
+  }
+}, [tileList, play])
 //#endregion AUTOPLAY
 
 //#region FULLSCREEN 
@@ -226,10 +255,7 @@ const toggleAutoplay = () => {
 //#endregion FULLSCREEN 
 
 //#region RESULT HANDLING 
-const [ result, setResult ] = useState('You WIN!!!');
-
-
-
+const [ result, setResult ] = useState('');
 
 //#endregion RESULT HANDLING 
 
@@ -239,19 +265,19 @@ const [ result, setResult ] = useState('You WIN!!!');
 
       <div style={{
           position: 'fixed',
-          top: 0,
+          top: '25px',
           right: '50%',
-          transform: 'translate(250px)'}}>
-        <button className="Button IconWrapper IconWrapper__settingRecord"  onClick={() => toggleControlKeys(controlKeysOpened)} title='Game controlls'>
-          <FontAwesomeIcon icon={['fas', 'list-alt' ]}/>
+          transform: 'translate(230px)'}}>
+        <button className="Button IconWrapper IconWrapper__upperBtn">
+          <FontAwesomeIcon className={ startBtnIcon === 'sync-alt' ? 'HideBtn' : ''} icon={['fas', apBtnIcon ]} onClick={() => toggleAutoplay()} title='Autoplay on/off'/>
         </button>
-        <button className="Button IconWrapper IconWrapper__settingRecord"  onClick={() => toggleControlKeys(controlKeysOpened)} title='Last 10 results'>
-          <FontAwesomeIcon icon={['fas', 'list-ol' ]}/>
+        <button className="Button IconWrapper IconWrapper__upperBtn" title='Game controlls'>
+          <FontAwesomeIcon icon={['fas', 'list-alt' ]} onClick={() => toggleControlKeys(controlKeysOpened)}/>
         </button>
-        <button className="Button IconWrapper IconWrapper__settingRecord"  onClick={() => toggleAutoplay()} title='Autoplay on/off'>
-          <FontAwesomeIcon icon={['fas', apBtnIcon ]}/>
+        <button className="Button IconWrapper IconWrapper__upperBtn" title='Last 10 results'>
+          <FontAwesomeIcon icon={['fas', 'list-ol' ]} onClick={() => toggleControlKeys(controlKeysOpened)}/>
         </button>
-        <button className="Button IconWrapper IconWrapper__settingRecord"  onClick={() => toggleFullScreen()} title='Full screen on/off'>
+        <button className="Button IconWrapper IconWrapper__upperBtn"  onClick={() => toggleFullScreen()} title='Full screen on/off'>
           <FontAwesomeIcon icon={['fas', fsBtnIcon ]}/>
         </button>
       </div>
@@ -266,11 +292,13 @@ const [ result, setResult ] = useState('You WIN!!!');
         <TileList tileList={tileList} gameConfig={gameConfig} />
       </div>
       <Controls
-        startNewGame={startNewGame}
+        startNewGame={() => startNewGame()}
+        startBtnIcon={startBtnIcon}
         toggleMusic={() => toggleMusic(musicConfig)}
         musicConfig={musicConfig}
         openSettings={() => toggleModal(modalOpened)}
       />
+      <div style={{fontSize: '64px', fontWeight: 'bold'}}>{gameConfig.gameCount}</div>      
       <Settings
         openModal={modalOpened}
         passToParentGameConfig={(newConfig: GameConfig) => { setGameConfig(newConfig); }}
